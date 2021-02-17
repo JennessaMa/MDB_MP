@@ -10,16 +10,34 @@ import UIKit
 
 class MainVC: UIViewController {
     
+    //score
+    var score:Int = 0
+    
+    //correct answer in name form
+    var answer:String?
+    
     // Create a property for our timer, we will initialize it in viewDidLoad
     var timer: Timer?
     
     // MARK: STEP 8: UI Customization
     // Customize your imageView and buttons. Run the app to see how they look.
     
+    let scoreLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "SCORE: 0"
+        lbl.font = UIFont.boldSystemFont(ofSize: 27)
+        lbl.textColor = .white
+        
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        return lbl
+    }()
+    
     let imageView: UIImageView = {
         let view = UIImageView()
         
         // MARK: >> Your Code Here <<
+        view.layer.borderWidth = 8
+        view.layer.borderColor = UIColor(red: 237/255, green: 246/255, blue: 249/255, alpha: 1).cgColor
         
         view.translatesAutoresizingMaskIntoConstraints = false
         
@@ -38,6 +56,10 @@ class MainVC: UIViewController {
             button.tag = index
             
             // MARK: >> Your Code Here <<
+            button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+            button.setTitleColor(.white, for: .normal)
+            button.backgroundColor = UIColor(red: 226/255, green: 149/255, blue: 120/255, alpha: 1)
+            button.layer.cornerRadius = 20
             
             button.translatesAutoresizingMaskIntoConstraints = false
             
@@ -56,7 +78,7 @@ class MainVC: UIViewController {
     // MARK: >> Your Code Here <<
     
     override func viewDidLoad() {
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(red: 255/255, green: 221/255, blue: 210/255, alpha: 1)
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
         
         // If you don't like the default presentation style,
@@ -74,48 +96,52 @@ class MainVC: UIViewController {
         
         
         // MARK: >> Your Code Here <<
+        view.addSubview(scoreLabel)
+        
+        NSLayoutConstraint.activate([
+            scoreLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
+            scoreLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            scoreLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90)
+        ])
+        
         view.addSubview(imageView)
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
-            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 100),
-            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -100),
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor)
+            imageView.topAnchor.constraint(equalTo: scoreLabel.bottomAnchor, constant: 10),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
+            imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, constant: 20)
         ])
         
         for i in 0...3 {
             view.addSubview(buttons[i])
         }
-//        view.addSubview(buttons[0])
-//        view.addSubview(buttons[1])
-//        view.addSubview(buttons[2])
-//        view.addSubview(buttons[3])
-        
+
         NSLayoutConstraint.activate([
-            buttons[0].topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 80),
-            buttons[0].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
-            buttons[0].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[0].topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 60),
+            buttons[0].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            buttons[0].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
             buttons[0].heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
             buttons[1].topAnchor.constraint(equalTo: buttons[0].bottomAnchor, constant: 20),
-            buttons[1].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
-            buttons[1].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[1].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            buttons[1].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
             buttons[1].heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
             buttons[2].topAnchor.constraint(equalTo: buttons[1].bottomAnchor, constant: 20),
-            buttons[2].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
-            buttons[2].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[2].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            buttons[2].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
             buttons[2].heightAnchor.constraint(equalToConstant: 40)
         ])
         
         NSLayoutConstraint.activate([
             buttons[3].topAnchor.constraint(equalTo: buttons[2].bottomAnchor, constant: 20),
-            buttons[3].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
-            buttons[3].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[3].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 90),
+            buttons[3].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -90),
             buttons[3].heightAnchor.constraint(equalToConstant: 40)
         ])
         
@@ -129,6 +155,9 @@ class MainVC: UIViewController {
         // cleaner way to do this, see if you can figure it out.
         
         // MARK: >> Your Code Here <<
+        for i in 0...3 {
+            buttons[i].addTarget(self, action: #selector(didTapAnswer(_:)), for: .touchUpInside)
+        }
         
         
         // MARK: STEP 12: Stats Button
@@ -170,9 +199,9 @@ class MainVC: UIViewController {
         imageView.image = question.image
         for i in 0...3 {
             buttons[i].setTitle(question.choices[i], for: .normal)
-            buttons[i].setTitleColor(.blue, for: .normal)
         }
-        
+        answer = question.answer
+        scoreLabel.text = "SCORE: \(score)"
     }
     
     // This function will be called every one second
@@ -185,6 +214,7 @@ class MainVC: UIViewController {
         // to come back and rework this step later on.
         
         // MARK: >> Your Code Here <<
+        
     }
     
     @objc func didTapAnswer(_ sender: UIButton) {
@@ -200,6 +230,11 @@ class MainVC: UIViewController {
         // Hint: You can use `sender.tag` to identify which button is tapped
         
         // MARK: >> Your Code Here <<
+        let b = buttons[sender.tag]
+        if b.title(for: .normal) == answer {
+            score += 1
+        }
+        getNextQuestion()
     }
     
     @objc func didTapStats(_ sender: UIButton) {

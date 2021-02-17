@@ -48,9 +48,10 @@ class StartVC: UIViewController {
     private let startButton: UIButton = {
         let button = UIButton()
         
-        button.setTitle("Start", for: .normal)
+        button.setTitle("START", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 30)
         
-        button.setTitleColor(.blue, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         
         // MARK: STEP 1: UIButton Customization
         // Create you own customized UIButton.
@@ -63,9 +64,10 @@ class StartVC: UIViewController {
         
         // MARK: >> Your Code Here <<
         //button.backgroundColor = .systemGray
-        button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.gray.cgColor
-        button.layer.cornerRadius = 12
+//        button.layer.borderWidth = 2
+//        button.layer.borderColor = UIColor.gray.cgColor
+        button.backgroundColor = UIColor(red: 131/255, green: 197/255, blue: 190/255, alpha: 1)
+        button.layer.cornerRadius = 20
         button.translatesAutoresizingMaskIntoConstraints = false
         
         return button
@@ -73,7 +75,7 @@ class StartVC: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white // == UIColor(expected type).white
+        view.backgroundColor = UIColor(red: 237/255, green: 246/255, blue: 249/255, alpha: 1) // == UIColor(expected type).white
         
         // MARK: STEP 2: Subviews and Constraints
         // Read through the following code and make sure that you understand
@@ -131,10 +133,10 @@ class StartVC: UIViewController {
         NSLayoutConstraint.activate([
             // MARK: >> Your Code Here <<
             //*LABEL'S HEIGHT IS INTRINSIC (and the button's)
-            startButton.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 100),
-            startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 180),
-            startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -180),
-            startButton.heightAnchor.constraint(equalTo: startButton.widthAnchor, constant: -20)
+            startButton.topAnchor.constraint(equalTo: welcomeLabel.bottomAnchor, constant: 150),
+            startButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 150),
+            startButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -150),
+            startButton.heightAnchor.constraint(equalTo: startButton.widthAnchor, constant: -80)
         ])
         
         // MARK: STEP 3: Adding Callbacks
