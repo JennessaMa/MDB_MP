@@ -11,7 +11,8 @@ import UIKit
 class MainVC: UIViewController {
     
     // Create a timer, call timerCallback every one second.
-    let timer: Timer? = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
+    //let timer: Timer? = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
+    var timer: Timer?
     
     // MARK: STEP 8: UI Customization
     // Customize your imageView and buttons. Run the app to see how they look.
@@ -57,6 +58,7 @@ class MainVC: UIViewController {
     
     override func viewDidLoad() {
         view.backgroundColor = .white
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
         
         // If you don't like the default presentation style,
         // you can change it to full screen too! This way you
@@ -64,14 +66,59 @@ class MainVC: UIViewController {
         // dismiss(animated: true, completion: nil) in order
         // to go back.
         //
-        // modalPresentationStyle = .fullScreen
+        //modalPresentationStyle = .fullScreen
         
         // MARK: STEP 7: Adding Subviews and Constraints
         // Add imageViews and buttons to the root view. Create constaints
         // for the layout. Then run the app with ⌘+r. You should see the image
         // for the first question as well as the four options.
         
+        
         // MARK: >> Your Code Here <<
+        view.addSubview(imageView)
+        
+        NSLayoutConstraint.activate([
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 100),
+            imageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -100),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor)
+        ])
+        
+        for i in 0...3 {
+            view.addSubview(buttons[i])
+        }
+//        view.addSubview(buttons[0])
+//        view.addSubview(buttons[1])
+//        view.addSubview(buttons[2])
+//        view.addSubview(buttons[3])
+        
+        NSLayoutConstraint.activate([
+            buttons[0].topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 80),
+            buttons[0].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
+            buttons[0].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[0].heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        NSLayoutConstraint.activate([
+            buttons[1].topAnchor.constraint(equalTo: buttons[0].bottomAnchor, constant: 20),
+            buttons[1].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
+            buttons[1].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[1].heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        NSLayoutConstraint.activate([
+            buttons[2].topAnchor.constraint(equalTo: buttons[1].bottomAnchor, constant: 20),
+            buttons[2].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
+            buttons[2].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[2].heightAnchor.constraint(equalToConstant: 40)
+        ])
+        
+        NSLayoutConstraint.activate([
+            buttons[3].topAnchor.constraint(equalTo: buttons[2].bottomAnchor, constant: 20),
+            buttons[3].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 120),
+            buttons[3].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -120),
+            buttons[3].heightAnchor.constraint(equalToConstant: 40)
+        ])
         
         getNextQuestion()
         
@@ -112,12 +159,21 @@ class MainVC: UIViewController {
         // following steps.
         
         // MARK: >> Your Code Here <<
+        guard let question = QuestionProvider.shared.getNextQuestion() else {
+            return
+        }
         
         // MARK: STEP 6: Data Population
         // Populate the imageView and buttons using the question object we obtained
         // above.
         
         // MARK: >> Your Code Here <<
+        imageView.image = question.image
+        for i in 0...3 {
+            buttons[i].setTitle(question.choices[i], for: .normal)
+            buttons[i].setTitleColor(.blue, for: .normal)
+        }
+        
     }
     
     // This function will be called every one second
