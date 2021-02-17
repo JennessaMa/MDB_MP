@@ -10,8 +10,7 @@ import UIKit
 
 class MainVC: UIViewController {
     
-    // Create a timer, call timerCallback every one second.
-    //let timer: Timer? = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
+    // Create a property for our timer, we will initialize it in viewDidLoad
     var timer: Timer?
     
     // MARK: STEP 8: UI Customization
