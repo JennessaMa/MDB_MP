@@ -10,6 +10,9 @@ import UIKit
 
 class MainVC: UIViewController {
     
+    //count to keep track of longest streak of correct answers
+    var streak: Int = 0
+    
     //boolean to keep track of whether the user has answered or not
     var answered: Bool = false
     
@@ -88,6 +91,28 @@ class MainVC: UIViewController {
     // function didTapStats.
     
     // MARK: >> Your Code Here <<
+    let statsButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("STATS", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 228/255, green: 217/255, blue: 1, alpha: 1)
+        button.layer.cornerRadius = 20
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    //PAUSE button
+    let pauseButton: UIButton = {
+       let button = UIButton()
+        button.setTitle("PAUSE", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1)
+        button.layer.cornerRadius = 20
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor(red: 255/255, green: 221/255, blue: 210/255, alpha: 1)
@@ -175,6 +200,19 @@ class MainVC: UIViewController {
         // Follow instructions at :49
         
         // MARK: >> Your Code Here <<
+        view.addSubview(statsButton)
+        NSLayoutConstraint.activate([
+            statsButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            statsButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            statsButton.widthAnchor.constraint(equalTo: statsButton.heightAnchor, constant: 50)
+        ])
+        
+        view.addSubview(pauseButton)
+        NSLayoutConstraint.activate([
+            pauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            pauseButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            pauseButton.widthAnchor.constraint(equalTo: pauseButton.heightAnchor, constant: 60)
+        ])
     }
     
     // What's the difference between viewDidLoad() and
@@ -233,10 +271,17 @@ class MainVC: UIViewController {
         // MARK: >> Your Code Here <<
         if resPhase { //in between answering questions --> flash buttons green/red for 1 second
             let b = buttons[userAnswer]
-            if b.title(for: .normal) == answer {
+            if b.title(for: .normal) == answer && answered { //guessed correct answer
                 b.backgroundColor = UIColor(red: 150/255, green: 204/255, blue: 0, alpha: 1)
-            } else {
+            } else if b.title(for: .normal) != answer && answered { //guessed incorrect answer
                 b.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
+            } else { //didn't answer at all
+                for bt in buttons {
+                    if bt.title(for: .normal) == answer {
+                        bt.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
+                        break
+                    }
+                }
             }
             resPhase = false
             timerCount += 1
@@ -268,7 +313,10 @@ class MainVC: UIViewController {
         resPhase = true
         let b = buttons[userAnswer]
         if b.title(for: .normal) == answer {
+            streak += 1
             score += 1
+        } else {
+            streak = 0
         }
         //getNextQuestion() moved to timerCallback()
     }
