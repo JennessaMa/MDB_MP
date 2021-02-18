@@ -10,8 +10,20 @@ import UIKit
 
 class MainVC: UIViewController {
     
-    //score
+    //boolean to keep track of whether the user has answered or not
+    var answered: Bool = false
+    
+    //count to keep track of the timer
+    var timerCount: Int = 0
+    
+    //boolean to tell when it's between answering questions phase
+    var resPhase: Bool = false
+    
+    //current score
     var score:Int = 0
+    
+    //user's answer (button tag)
+    var userAnswer: Int = 0
     
     //correct answer in name form
     var answer:String?
@@ -58,7 +70,7 @@ class MainVC: UIViewController {
             // MARK: >> Your Code Here <<
             button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
             button.setTitleColor(.white, for: .normal)
-            button.backgroundColor = UIColor(red: 226/255, green: 149/255, blue: 120/255, alpha: 1)
+//            button.backgroundColor = UIColor(red: 226/255, green: 149/255, blue: 120/255, alpha: 1)
             button.layer.cornerRadius = 20
             
             button.translatesAutoresizingMaskIntoConstraints = false
@@ -159,7 +171,6 @@ class MainVC: UIViewController {
             buttons[i].addTarget(self, action: #selector(didTapAnswer(_:)), for: .touchUpInside)
         }
         
-        
         // MARK: STEP 12: Stats Button
         // Follow instructions at :49
         
@@ -199,9 +210,15 @@ class MainVC: UIViewController {
         imageView.image = question.image
         for i in 0...3 {
             buttons[i].setTitle(question.choices[i], for: .normal)
+            //moved from initializer b/c need to reset after res phase
+            buttons[i].backgroundColor = UIColor(red: 226/255, green: 149/255, blue: 120/255, alpha: 1)
         }
+        //set properties
         answer = question.answer
         scoreLabel.text = "SCORE: \(score)"
+        answered = false
+        resPhase = false
+        timerCount = 0
     }
     
     // This function will be called every one second
@@ -214,7 +231,23 @@ class MainVC: UIViewController {
         // to come back and rework this step later on.
         
         // MARK: >> Your Code Here <<
-        
+        if resPhase { //in between answering questions --> flash buttons green/red for 1 second
+            let b = buttons[userAnswer]
+            if b.title(for: .normal) == answer {
+                b.backgroundColor = UIColor(red: 150/255, green: 204/255, blue: 0, alpha: 1)
+            } else {
+                b.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
+            }
+            resPhase = false
+            timerCount += 1
+        } else if timerCount == 5 && !answered { //time limit passed for the user to answer the question
+            resPhase = true
+        } else if timerCount >= 6 || (answered && !resPhase) { //(user didn't answer or user answered early) and resPhase over
+            getNextQuestion() //will reset the timerCount
+        } else {
+            timerCount += 1
+        }
+//        timerCount += 1
     }
     
     @objc func didTapAnswer(_ sender: UIButton) {
@@ -230,11 +263,14 @@ class MainVC: UIViewController {
         // Hint: You can use `sender.tag` to identify which button is tapped
         
         // MARK: >> Your Code Here <<
-        let b = buttons[sender.tag]
+        answered = true
+        userAnswer = sender.tag
+        resPhase = true
+        let b = buttons[userAnswer]
         if b.title(for: .normal) == answer {
             score += 1
         }
-        getNextQuestion()
+        //getNextQuestion() moved to timerCallback()
     }
     
     @objc func didTapStats(_ sender: UIButton) {
