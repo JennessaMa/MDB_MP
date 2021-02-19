@@ -10,11 +10,17 @@ import UIKit
 
 class MainVC: UIViewController {
     
+    //boolean to tell if it's in pause mode (don't increment timer)
+    var paused: Bool = false
+    
     //count to keep track of longest streak of correct answers
     var streak: Int = 0
     
     //boolean to keep track of whether the user has answered or not
     var answered: Bool = false
+    
+    //array to keep track of results in the form"memberName: correct/incorrect"
+    var statAnswers: [String] = []
     
     //count to keep track of the timer
     var timerCount: Int = 0
@@ -207,12 +213,16 @@ class MainVC: UIViewController {
             statsButton.widthAnchor.constraint(equalTo: statsButton.heightAnchor, constant: 50)
         ])
         
+        statsButton.addTarget(self, action: #selector(didTapStats(_:)), for: .touchUpInside)
+        
         view.addSubview(pauseButton)
         NSLayoutConstraint.activate([
             pauseButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
             pauseButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            pauseButton.widthAnchor.constraint(equalTo: pauseButton.heightAnchor, constant: 60)
+            pauseButton.widthAnchor.constraint(equalTo: pauseButton.heightAnchor, constant: 80)
         ])
+        
+        pauseButton.addTarget(self, action: #selector(didTapPause(_:)), for: .touchUpInside)
     }
     
     // What's the difference between viewDidLoad() and
@@ -222,6 +232,10 @@ class MainVC: UIViewController {
         // Restart the timer when view reappear.
         
         // MARK: >> Your Code Here <<
+        paused = false
+        pauseButton.backgroundColor = UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1)
+        pauseButton.setTitle("PAUSE", for: .normal)
+        pauseButton.setTitleColor(.white, for: .normal)
     }
     
     func getNextQuestion() {
@@ -269,30 +283,32 @@ class MainVC: UIViewController {
         // to come back and rework this step later on.
         
         // MARK: >> Your Code Here <<
-        if resPhase { //in between answering questions --> flash buttons green/red for 1 second
-            let b = buttons[userAnswer]
-            if b.title(for: .normal) == answer && answered { //guessed correct answer
-                b.backgroundColor = UIColor(red: 150/255, green: 204/255, blue: 0, alpha: 1)
-            } else if b.title(for: .normal) != answer && answered { //guessed incorrect answer
-                b.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
-            } else { //didn't answer at all
-                for bt in buttons {
-                    if bt.title(for: .normal) == answer {
-                        bt.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
-                        break
+        
+        if !paused { //only continue the timer if it's not paused
+            if resPhase { //in between answering questions --> flash buttons green/red for 1 second
+                let b = buttons[userAnswer]
+                if b.title(for: .normal) == answer && answered { //guessed correct answer
+                    b.backgroundColor = UIColor(red: 150/255, green: 204/255, blue: 0, alpha: 1)
+                } else if b.title(for: .normal) != answer && answered { //guessed incorrect answer
+                    b.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
+                } else { //didn't answer at all
+                    for bt in buttons {
+                        if bt.title(for: .normal) == answer {
+                            bt.backgroundColor = UIColor(red: 158/255, green: 42/255, blue: 43/255, alpha: 1)
+                            break
+                        }
                     }
                 }
+                resPhase = false
+                timerCount += 1
+            } else if timerCount == 5 && !answered { //time limit passed for the user to answer the question
+                resPhase = true
+            } else if timerCount >= 6 || (answered && !resPhase) { //(user didn't answer or user answered early) and resPhase over
+                getNextQuestion() //will reset the timerCount
+            } else {
+                timerCount += 1
             }
-            resPhase = false
-            timerCount += 1
-        } else if timerCount == 5 && !answered { //time limit passed for the user to answer the question
-            resPhase = true
-        } else if timerCount >= 6 || (answered && !resPhase) { //(user didn't answer or user answered early) and resPhase over
-            getNextQuestion() //will reset the timerCount
-        } else {
-            timerCount += 1
         }
-//        timerCount += 1
     }
     
     @objc func didTapAnswer(_ sender: UIButton) {
@@ -308,17 +324,36 @@ class MainVC: UIViewController {
         // Hint: You can use `sender.tag` to identify which button is tapped
         
         // MARK: >> Your Code Here <<
-        answered = true
-        userAnswer = sender.tag
-        resPhase = true
-        let b = buttons[userAnswer]
-        if b.title(for: .normal) == answer {
-            streak += 1
-            score += 1
-        } else {
-            streak = 0
+        if !paused { //only able to answer question if game isn't paused
+            answered = true
+            userAnswer = sender.tag
+            resPhase = true
+            var statRes = "incorrect :("
+            let b = buttons[userAnswer]
+            if b.title(for: .normal) == answer {
+                statRes = "correct!"
+                streak += 1
+                score += 1
+            } else {
+                streak = 0
+            }
+            statAnswers.append("\(answer ?? ""): \(statRes)")
         }
-        //getNextQuestion() moved to timerCallback()
+    }
+    
+    @objc func didTapPause(_ sender: UIButton) {
+        if paused == false { //user clicking "pause", reset score
+            paused = true
+            pauseButton.backgroundColor = .white
+            pauseButton.setTitle("RESUME", for: .normal)
+            pauseButton.setTitleColor(UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1), for: .normal)
+            score = 0
+        } else if paused { //user clicking "resume"
+            paused = false
+            pauseButton.backgroundColor = UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1)
+            pauseButton.setTitle("PAUSE", for: .normal)
+            pauseButton.setTitleColor(.white, for: .normal)
+        }
     }
     
     @objc func didTapStats(_ sender: UIButton) {
@@ -333,6 +368,24 @@ class MainVC: UIViewController {
         
         // MARK: >> Your Code Here <<
         
+        let numAnswers = statAnswers.count
+        var resString:String = ""
+        var resData:[String] = []
+        
+        if numAnswers >= 3 {
+            resData = Array(statAnswers[numAnswers - 3...numAnswers - 1])
+        } else {
+            resData = statAnswers
+        }
+        
+        for res in resData {
+            resString += "\n \(res)"
+        }
+        
+        let data: String = "Your current streak is \(streak)! \n \n Your 3 most recent answers are: \(resString)"
+        vc.dataWeNeedExample1 = data
+        
+        didTapPause(statsButton) //idk about this
         present(vc, animated: true, completion: nil)
     }
     

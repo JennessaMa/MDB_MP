@@ -75,5 +75,6 @@ class StatsVC: UIViewController {
         super.viewDidLoad()
         
         // MARK: >> Your Code Here <<
+        view.backgroundColor = .white
     }
 }
