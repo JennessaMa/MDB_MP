@@ -19,7 +19,8 @@ class StatsVC: UIViewController {
     // the data transferring for StatsVC.
     
     // Method 1: Implicit Unwrapped Instance Property
-    var dataWeNeedExample1: String!
+    //var dataWeNeedExample1: String!
+    var dataWeNeedExample1: [[String]]!
     //
     // Check didTapStats in MainVC.swift on how to use it.
     //
@@ -64,6 +65,7 @@ class StatsVC: UIViewController {
     // MARK: STEP 14: StatsVC UI
     // You know the drill. Initialize the UI components, add subviews,
     // and create contraints.
+
     //
     // Note: You cannot use self inside these closures because they
     // happens before the instance is fully initialized. If you want
@@ -71,10 +73,105 @@ class StatsVC: UIViewController {
     
     // MARK: >> Your Code Here <<
     
+    let backButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("BACK", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor(red: 228/255, green: 217/255, blue: 1, alpha: 1)
+        button.layer.cornerRadius = 20
+        button.translatesAutoresizingMaskIntoConstraints = false
+        
+        return button
+    }()
+    
+    let streakLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.font = UIFont.boldSystemFont(ofSize: 22)
+        lbl.textColor = UIColor(red: 163/255, green: 50/255, blue: 11/255, alpha: 1)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.textAlignment = .center
+        return lbl
+    }()
+    
+    let resIntro: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "Your most recent answers were: "
+        lbl.font = UIFont.boldSystemFont(ofSize: 22)
+        lbl.textColor = UIColor(red: 131/255, green: 197/255, blue: 190/255, alpha: 1)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        lbl.textAlignment = .center
+        
+        return lbl
+    }()
+    
+    let resLabels: [UILabel] = {
+        return (0..<3).map { index in
+            let lbl = UILabel()
+            lbl.font = UIFont.boldSystemFont(ofSize: 18)
+            lbl.textColor = UIColor(red: 131/255, green: 197/255, blue: 190/255, alpha: 1)
+            lbl.translatesAutoresizingMaskIntoConstraints = false
+            lbl.textAlignment = .center
+            
+            return lbl
+        }
+        
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = UIColor(red: 237/255, green: 246/255, blue: 249/255, alpha: 1)
+        streakLabel.text = dataWeNeedExample1[0][0]
+        for i in 0...2 {
+            resLabels[i].text = dataWeNeedExample1[1][i]
+            view.addSubview(resLabels[i])
+        }
+        view.addSubview(backButton)
+        view.addSubview(streakLabel)
+        view.addSubview(resIntro)
         
-        // MARK: >> Your Code Here <<
-        view.backgroundColor = .white
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            backButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            backButton.widthAnchor.constraint(equalTo: backButton.heightAnchor, constant: 70)
+        ])
+        backButton.addTarget(self, action: #selector(didTapBack(_:)), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            streakLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 150),
+            streakLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            streakLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10),
+            streakLabel.heightAnchor.constraint(equalToConstant: 20)
+        ])
+
+        NSLayoutConstraint.activate([
+            resIntro.topAnchor.constraint(equalTo: streakLabel.bottomAnchor, constant: 50),
+            resIntro.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            resIntro.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            resIntro.heightAnchor.constraint(equalToConstant: 20)
+        ])
+        
+        NSLayoutConstraint.activate([
+            resLabels[0].topAnchor.constraint(equalTo: resIntro.bottomAnchor, constant: 20),
+            resLabels[0].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            resLabels[0].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+        ])
+        
+        NSLayoutConstraint.activate([
+            resLabels[1].topAnchor.constraint(equalTo: resLabels[0].bottomAnchor, constant: 20),
+            resLabels[1].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            resLabels[1].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+        ])
+        
+        NSLayoutConstraint.activate([
+            resLabels[2].topAnchor.constraint(equalTo: resLabels[1].bottomAnchor, constant: 20),
+            resLabels[2].leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            resLabels[2].trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+        ])
+        
+    }
+    
+    @objc func didTapBack(_ sender: UIButton) {
+        dismiss(animated: false, completion: nil)
     }
 }

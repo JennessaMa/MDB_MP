@@ -121,6 +121,9 @@ class MainVC: UIViewController {
     }()
     
     override func viewDidLoad() {
+        //refresh questions each time user presses start
+        QuestionProvider.shared.reset()
+        
         view.backgroundColor = UIColor(red: 255/255, green: 221/255, blue: 210/255, alpha: 1)
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerCallback), userInfo: nil, repeats: true)
         
@@ -232,6 +235,7 @@ class MainVC: UIViewController {
         // Restart the timer when view reappear.
         
         // MARK: >> Your Code Here <<
+        streak = 0
         paused = false
         pauseButton.backgroundColor = UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1)
         pauseButton.setTitle("PAUSE", for: .normal)
@@ -348,6 +352,7 @@ class MainVC: UIViewController {
             pauseButton.setTitle("RESUME", for: .normal)
             pauseButton.setTitleColor(UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1), for: .normal)
             score = 0
+            streak = 0
         } else if paused { //user clicking "resume"
             paused = false
             pauseButton.backgroundColor = UIColor(red: 117/255, green: 70/255, blue: 104/255, alpha: 1)
@@ -360,7 +365,7 @@ class MainVC: UIViewController {
         
         let vc = StatsVC(data: "Hello")
         
-        vc.dataWeNeedExample1 = "Hello"
+        //vc.dataWeNeedExample1 = "Hello"
         
         // MARK: STEP 13: StatsVC Data
         // Follow instructions in StatsVC. You also need to invalidate
@@ -369,23 +374,33 @@ class MainVC: UIViewController {
         // MARK: >> Your Code Here <<
         
         let numAnswers = statAnswers.count
-        var resString:String = ""
+//        var resString:[String]?
         var resData:[String] = []
+        var data: [[String]] = []
+        
+        data.append(["You current have a streak of \(streak)!"])
         
         if numAnswers >= 3 {
             resData = Array(statAnswers[numAnswers - 3...numAnswers - 1])
         } else {
             resData = statAnswers
         }
-        
-        for res in resData {
-            resString += "\n \(res)"
+        while resData.count < 3 {
+            resData.append("")
         }
+        data.append(resData)
         
-        let data: String = "Your current streak is \(streak)! \n \n Your 3 most recent answers are: \(resString)"
+//        for res in resData {
+//            resString += "\n \(res)"
+//        }
+        
+        //let data: String = "Your current streak is \(streak)! \n \n Your 3 most recent answers are: \(resString)"
         vc.dataWeNeedExample1 = data
         
-        didTapPause(statsButton) //idk about this
+        if !paused { //what if user presses pause and then stats
+            didTapPause(statsButton) //idk about this
+        }
+        vc.modalPresentationStyle = .fullScreen
         present(vc, animated: true, completion: nil)
     }
     
