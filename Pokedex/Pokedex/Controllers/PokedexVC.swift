@@ -9,6 +9,10 @@ import UIKit
 
 class PokedexVC: UIViewController {
     
+    //boolean to see if view should be in nx2 view or regular row layout
+    //starts out in row layout
+    var inGridView: Bool = false
+    
     let pokemons = PokemonGenerator.shared.getPokemonArray()
     
     let collectionView: UICollectionView = {
@@ -35,8 +39,10 @@ class PokedexVC: UIViewController {
         b.setImage(UIImage(systemName: "square.grid.2x2"), for: .normal)
 //        b.layer.cornerRadius = 10
 //        b.layer.borderWidth = 2
-        b.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        b.layer.borderColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1).cgColor
+//        b.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 22, weight: .medium)
+        b.setPreferredSymbolConfiguration(symbolConfig, forImageIn: .normal)
+        //b.layer.borderColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1).cgColor
         b.imageView?.tintColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1)
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
@@ -50,8 +56,9 @@ class PokedexVC: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(collectionView)
         
+        toggleView.addTarget(self, action: #selector(didTapToggle(_:)), for: .touchUpInside)
         NSLayoutConstraint.activate([
-            toggleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            toggleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             toggleView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             toggleView.widthAnchor.constraint(equalTo: toggleView.heightAnchor, constant: 10)
         ])
@@ -66,9 +73,28 @@ class PokedexVC: UIViewController {
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.allowsSelection = true
+        collectionView.allowsMultipleSelection = false
         
     }
+    
+    @objc func didTapToggle(_ sender: UIButton) {
+        if inGridView {
+            inGridView = false
+            toggleView.backgroundColor = .clear
+            toggleView.imageView?.tintColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1)
+            
+        } else {
+            inGridView = true
+            toggleView.backgroundColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1)
+            toggleView.imageView?.tintColor = .white
+            toggleView.layer.cornerRadius = 7
+        }
+        collectionView.performBatchUpdates(nil, completion: nil)
+        //print("inGridView is now \(inGridView)")
+    }
 }
+
 
 extension PokedexVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -85,7 +111,17 @@ extension PokedexVC: UICollectionViewDataSource {
 
 extension PokedexVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if inGridView {
+            return CGSize(width: view.frame.width / 3, height: view.frame.width / 3)
+        }
         return CGSize(width: 100, height: 120)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let pokemon = pokemons[indexPath.item]
+        let details = DetailsVC()
+        details.pokemon = pokemon
+        present(details, animated: true, completion: nil)
     }
 }
 

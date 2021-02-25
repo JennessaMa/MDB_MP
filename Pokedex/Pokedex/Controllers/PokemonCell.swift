@@ -13,7 +13,7 @@ class PokemonCell: UICollectionViewCell {
     var pokemon: Pokemon? {
         didSet {
             //https://cocoacasts.com/fm-3-download-an-image-from-a-url-in-swift
-            print(pokemon?.imageUrl ?? "NO URL PROVIDED")
+            //print(pokemon?.imageUrl ?? "NO URL PROVIDED")
             if let url: URL = URL(string: (pokemon?.imageUrl)!) {
                 if let data = try? Data(contentsOf: url) {
                         imageView.image = UIImage(data: data)
