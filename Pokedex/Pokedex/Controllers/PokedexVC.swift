@@ -13,7 +13,10 @@ class PokedexVC: UIViewController {
     //starts out in row layout
     var inGridView: Bool = false
     
-    let pokemons = PokemonGenerator.shared.getPokemonArray()
+    //let pokemons = PokemonGenerator.shared.getPokemonArray()
+    var pokemons = PokemonGenerator.shared.getPokemonArray()
+    
+    var filtered: [Pokemon]?
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -47,6 +50,8 @@ class PokedexVC: UIViewController {
         b.translatesAutoresizingMaskIntoConstraints = false
         return b
     }()
+    
+    var searchBar: UISearchBar!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,13 +74,25 @@ class PokedexVC: UIViewController {
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
         ])
         
-        collectionView.frame = view.bounds.inset(by: UIEdgeInsets(top: 120, left: 30, bottom: 0, right: 30))
+        collectionView.frame = view.bounds.inset(by: UIEdgeInsets(top: 150, left: 30, bottom: 0, right: 30))
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.allowsSelection = true
         collectionView.allowsMultipleSelection = false
         
+        //search bar stuff
+        searchBar = UISearchBar.init(frame: .zero)
+        searchBar.delegate = self
+        view.addSubview(searchBar)
+        
+        let safeArea = view.safeAreaInsets
+        //let searchBarSTF = searchBar.sizeThatFits(CGSize.init(width: view.bounds.width - 50, height: 30))
+        searchBar.frame = CGRect.init(x: view.bounds.width/8, y: safeArea.top + 120, width: view.bounds.width / 4 * 3, height: 30)
+        //searchBar.tintColor = UIColor(red: 202/255, green: 233/255, blue: 255/255, alpha: 1)
+        searchBar.barTintColor = UIColor(red: 202/255, green: 233/255, blue: 255/255, alpha: 1)
+        searchBar.placeholder = "Search for a pokemon..."
+        //how to get rid of top + bot lines??
     }
     
     @objc func didTapToggle(_ sender: UIButton) {
@@ -88,7 +105,7 @@ class PokedexVC: UIViewController {
             inGridView = true
             toggleView.backgroundColor = UIColor(red: 27/255, green: 73/255, blue: 101/255, alpha: 1)
             toggleView.imageView?.tintColor = .white
-            toggleView.layer.cornerRadius = 7
+            toggleView.layer.cornerRadius = 10
         }
         collectionView.performBatchUpdates(nil, completion: nil)
         //print("inGridView is now \(inGridView)")
@@ -125,3 +142,22 @@ extension PokedexVC: UICollectionViewDelegateFlowLayout {
     }
 }
 
+extension PokedexVC: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        pokemons = PokemonGenerator.shared.getPokemonArray()
+        filtered = pokemons.filter({ p in
+            p.name.contains(searchText)
+        })
+        print("num filtered pokemon: \(filtered!.count)")
+        for p in filtered! {
+            print(p.name)
+        }
+        if filtered?.count == 0 {
+            pokemons = PokemonGenerator.shared.getPokemonArray()
+        } else {
+            pokemons = filtered!
+        }
+        
+        collectionView.performBatchUpdates(nil, completion: nil)
+    }
+}

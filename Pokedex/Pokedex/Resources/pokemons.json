@@ -3114,9 +3114,9 @@
         "national_number": "122",
         "evolution": null,
         "sprites": {
-            "normal": "https://img.pokemondb.net/sprites/omega-ruby-alpha-sapphire/dex/normal/mr.-mime.png",
-            "large": "https://img.pokemondb.net/artwork/mr.-mime.jpg",
-            "animated": "https://img.pokemondb.net/sprites/black-white/anim/normal/mr.-mime.gif"
+            "normal": "https://img.pokemondb.net/sprites/omega-ruby-alpha-sapphire/dex/normal/mr-mime.png",
+            "large": "https://img.pokemondb.net/artwork/mr-mime.jpg",
+            "animated": "https://img.pokemondb.net/sprites/black-white/anim/normal/mr-mime.gif"
         },
         "name": "Mr. Mime",
         "type": [
