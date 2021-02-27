@@ -197,10 +197,6 @@ extension PokedexVC: UISearchBarDelegate {
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         //reset all filters by hitting cancel button
-//        collectionView.performBatchUpdates({currPokemons = pokemons
-//                                            currTypes = types
-//                                            searchBar.scopeButtonTitles = currTypes
-//                                            currSelectedType = "All"}, completion: nil)
         currPokemons = pokemons
         currTypes = types
         searchBar.scopeButtonTitles = currTypes
@@ -212,22 +208,6 @@ extension PokedexVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         //filter even more based on original string
         currSelectedType = currTypes![selectedScope]
-//        collectionView.performBatchUpdates({
-//            if (currSelectedType == "All") {
-//                currPokemons = copyCurrPokemons
-//            } else {
-//                var newPokemons: [Pokemon] = []
-//                for i in 0..<(copyCurrPokemons!.count) {
-//                    let p: Pokemon = copyCurrPokemons![i]
-//                    for t in p.types {
-//                        if (t.rawValue == currSelectedType) {
-//                            newPokemons.append(p)
-//                        }
-//                    }
-//                }
-//                currPokemons = newPokemons
-//            }
-//        }, completion: nil)
         if (currSelectedType == "All") {
             currPokemons = copyCurrPokemons
         } else {
