@@ -9,6 +9,8 @@ import UIKit
 
 class PokedexVC: UIViewController {
     
+    //some pokemon links arent working (i.e. pikipek, pulu something) so images may not match pokemon
+    
     //boolean to see if view should be in nx2 view or regular row layout
     //starts out in row layout
     var inGridView: Bool = false
@@ -16,7 +18,15 @@ class PokedexVC: UIViewController {
     //let pokemons = PokemonGenerator.shared.getPokemonArray()
     var pokemons = PokemonGenerator.shared.getPokemonArray()
     
-    var filtered: [Pokemon]?
+    let types: [String] = ["All", "Bug", "Grass","Dark","Ground", "Dragon", "Electric", "Normal", "Fairy", "Poison", "Fighting", "Psychic", "Fire", "Rock", "Flying", "Steel","Ghost","Water","Unknown"]
+
+    var currTypes: [String]?
+    
+    var currSelectedType: String = "All"
+    
+    var currPokemons: [Pokemon]?
+    
+    var copyCurrPokemons: [Pokemon]?
     
     let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -74,7 +84,7 @@ class PokedexVC: UIViewController {
             titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
         ])
         
-        collectionView.frame = view.bounds.inset(by: UIEdgeInsets(top: 150, left: 30, bottom: 0, right: 30))
+        collectionView.frame = view.bounds.inset(by: UIEdgeInsets(top: 230, left: 30, bottom: 0, right: 30))
         collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -83,16 +93,23 @@ class PokedexVC: UIViewController {
         
         //search bar stuff
         searchBar = UISearchBar.init(frame: .zero)
+        searchBar.setShowsCancelButton(true, animated: false)
         searchBar.delegate = self
         view.addSubview(searchBar)
         
         let safeArea = view.safeAreaInsets
         //let searchBarSTF = searchBar.sizeThatFits(CGSize.init(width: view.bounds.width - 50, height: 30))
         searchBar.frame = CGRect.init(x: view.bounds.width/8, y: safeArea.top + 120, width: view.bounds.width / 4 * 3, height: 30)
-        //searchBar.tintColor = UIColor(red: 202/255, green: 233/255, blue: 255/255, alpha: 1)
+        //searchBar.tintColor = .blue
         searchBar.barTintColor = UIColor(red: 202/255, green: 233/255, blue: 255/255, alpha: 1)
         searchBar.placeholder = "Search for a pokemon..."
-        //how to get rid of top + bot lines??
+        searchBar.showsCancelButton = true
+        searchBar.showsScopeBar = true
+        currPokemons = pokemons
+        copyCurrPokemons = currPokemons
+        currTypes = types
+        searchBar.scopeButtonTitles = currTypes
+        //cancel button is transparent idk whyyyyyyy
     }
     
     @objc func didTapToggle(_ sender: UIButton) {
@@ -115,11 +132,11 @@ class PokedexVC: UIViewController {
 
 extension PokedexVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return pokemons.count
+        return currPokemons!.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let pokemon = pokemons[indexPath.item]
+        let pokemon = currPokemons?[indexPath.item]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCell.reuseIdentifier, for: indexPath) as! PokemonCell
         cell.pokemon = pokemon
         return cell
@@ -135,7 +152,7 @@ extension PokedexVC: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let pokemon = pokemons[indexPath.item]
+        let pokemon = currPokemons?[indexPath.item]
         let details = DetailsVC()
         details.pokemon = pokemon
         present(details, animated: true, completion: nil)
@@ -144,20 +161,87 @@ extension PokedexVC: UICollectionViewDelegateFlowLayout {
 
 extension PokedexVC: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        pokemons = PokemonGenerator.shared.getPokemonArray()
-        filtered = pokemons.filter({ p in
+        //filter pokemons based on string
+        currPokemons = pokemons.filter({ p in
             p.name.contains(searchText)
         })
-        print("num filtered pokemon: \(filtered!.count)")
-        for p in filtered! {
-            print(p.name)
+        if currPokemons?.count == 0 {
+            currPokemons = PokemonGenerator.shared.getPokemonArray()
         }
-        if filtered?.count == 0 {
-            pokemons = PokemonGenerator.shared.getPokemonArray()
-        } else {
-            pokemons = filtered!
+
+        //if user selected a type, filter another layer for that type
+        if (currSelectedType != "All") {
+            currPokemons = currPokemons?.filter({ p in
+                for t in p.types {
+                    if t.rawValue == currSelectedType {
+                        return true
+                    }
+                }
+                return false
+            })
         }
+
+        //update scope filters
+        var newScopeArr: [String] = ["All"]
+        for p in currPokemons! {
+            for t in p.types {
+                newScopeArr.append(t.rawValue)
+            }
+        }
+        let newScopeSet = Set(newScopeArr) //get rid of duplicates
+        currTypes = Array(newScopeSet)
+        searchBar.scopeButtonTitles = currTypes
+        copyCurrPokemons = currPokemons
+        collectionView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        //reset all filters by hitting cancel button
+//        collectionView.performBatchUpdates({currPokemons = pokemons
+//                                            currTypes = types
+//                                            searchBar.scopeButtonTitles = currTypes
+//                                            currSelectedType = "All"}, completion: nil)
+        currPokemons = pokemons
+        currTypes = types
+        searchBar.scopeButtonTitles = currTypes
+        currSelectedType = "All"
+        collectionView.reloadData()
         
-        collectionView.performBatchUpdates(nil, completion: nil)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        //filter even more based on original string
+        currSelectedType = currTypes![selectedScope]
+//        collectionView.performBatchUpdates({
+//            if (currSelectedType == "All") {
+//                currPokemons = copyCurrPokemons
+//            } else {
+//                var newPokemons: [Pokemon] = []
+//                for i in 0..<(copyCurrPokemons!.count) {
+//                    let p: Pokemon = copyCurrPokemons![i]
+//                    for t in p.types {
+//                        if (t.rawValue == currSelectedType) {
+//                            newPokemons.append(p)
+//                        }
+//                    }
+//                }
+//                currPokemons = newPokemons
+//            }
+//        }, completion: nil)
+        if (currSelectedType == "All") {
+            currPokemons = copyCurrPokemons
+        } else {
+            var newPokemons: [Pokemon] = []
+            for i in 0..<(copyCurrPokemons!.count) {
+                let p: Pokemon = copyCurrPokemons![i]
+                for t in p.types {
+                    if (t.rawValue == currSelectedType) {
+                        newPokemons.append(p)
+                    }
+                }
+            }
+            currPokemons = newPokemons
+        }
+        collectionView.reloadData()
     }
 }

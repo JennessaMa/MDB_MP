@@ -9,7 +9,7 @@ import UIKit
 
 class PokemonCell: UICollectionViewCell {
     static let reuseIdentifier: String = String(describing: PokemonCell.self)
-    
+        
     var pokemon: Pokemon? {
         didSet {
             //https://cocoacasts.com/fm-3-download-an-image-from-a-url-in-swift
