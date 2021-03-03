@@ -10,11 +10,9 @@
 		1AF03DC425EDC18500E3FF80 /* HorizontalActionLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF03DC325EDC18500E3FF80 /* HorizontalActionLabel.swift */; };
 		1AF385F225E812170006AE59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF385F125E812170006AE59 /* AppDelegate.swift */; };
 		1AF385F425E812170006AE59 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF385F325E812170006AE59 /* SceneDelegate.swift */; };
-		1AF385F625E812170006AE59 /* SigninVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF385F525E812170006AE59 /* SigninVC.swift */; };
 		1AF385F925E812170006AE59 /* Auth.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AF385F725E812170006AE59 /* Auth.storyboard */; };
 		1AF385FB25E8121A0006AE59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AF385FA25E8121A0006AE59 /* Assets.xcassets */; };
 		1AF385FE25E8121A0006AE59 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AF385FC25E8121A0006AE59 /* LaunchScreen.storyboard */; };
-		1AF3860725E814990006AE59 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1AF3860625E814990006AE59 /* GoogleService-Info.plist */; };
 		1AF3862525E816540006AE59 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3862425E816540006AE59 /* User.swift */; };
 		1AF3864025E81A9E0006AE59 /* AuthProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3863F25E81A9E0006AE59 /* AuthProvider.swift */; };
 		1AF3864325E81C4A0006AE59 /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3864225E81C4A0006AE59 /* Event.swift */; };
@@ -28,6 +26,9 @@
 		1AF3867E25E877B40006AE59 /* LoadingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3867D25E877B40006AE59 /* LoadingButton.swift */; };
 		1AF3868125E88AA20006AE59 /* FIRDatabaseRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3868025E88AA20006AE59 /* FIRDatabaseRequest.swift */; };
 		88D1856E3E3B7E97C54E6FB3 /* Pods_MDB_Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E51BF3FE48C081C2540BE42E /* Pods_MDB_Social.framework */; };
+		D7578E4F25EF6AFC00D677E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */; };
+		D7578E5325EF6DD200D677E8 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5225EF6DD100D677E8 /* SignUpVC.swift */; };
+		D7578E5725EF6F1500D677E8 /* SigninVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5625EF6F1500D677E8 /* SigninVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,12 +36,10 @@
 		1AF385EE25E812170006AE59 /* MDB Social.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MDB Social.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1AF385F125E812170006AE59 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1AF385F325E812170006AE59 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		1AF385F525E812170006AE59 /* SigninVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninVC.swift; sourceTree = "<group>"; };
 		1AF385F825E812170006AE59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Auth.storyboard; sourceTree = "<group>"; };
 		1AF385FA25E8121A0006AE59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1AF385FD25E8121A0006AE59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AF385FF25E8121A0006AE59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1AF3860625E814990006AE59 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		1AF3862425E816540006AE59 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		1AF3863F25E81A9E0006AE59 /* AuthProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProvider.swift; sourceTree = "<group>"; };
 		1AF3864225E81C4A0006AE59 /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
@@ -55,6 +54,9 @@
 		1AF3868025E88AA20006AE59 /* FIRDatabaseRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIRDatabaseRequest.swift; sourceTree = "<group>"; };
 		97EDB17FB89D773DE44696EF /* Pods-MDB Social.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDB Social.debug.xcconfig"; path = "Target Support Files/Pods-MDB Social/Pods-MDB Social.debug.xcconfig"; sourceTree = "<group>"; };
 		BC2F19D1A2D8BB347835EFD1 /* Pods-MDB Social.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MDB Social.release.xcconfig"; path = "Target Support Files/Pods-MDB Social/Pods-MDB Social.release.xcconfig"; sourceTree = "<group>"; };
+		D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D7578E5225EF6DD100D677E8 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
+		D7578E5625EF6F1500D677E8 /* SigninVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SigninVC.swift; sourceTree = "<group>"; };
 		E51BF3FE48C081C2540BE42E /* Pods_MDB_Social.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MDB_Social.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -73,6 +75,7 @@
 		1AF385E525E812170006AE59 = {
 			isa = PBXGroup;
 			children = (
+				D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */,
 				1AF385F025E812170006AE59 /* MDB Social */,
 				1AF385EF25E812170006AE59 /* Products */,
 				3EC272BECC8A6647DC74B393 /* Pods */,
@@ -107,7 +110,6 @@
 			children = (
 				1AF385F125E812170006AE59 /* AppDelegate.swift */,
 				1AF385FF25E8121A0006AE59 /* Info.plist */,
-				1AF3860625E814990006AE59 /* GoogleService-Info.plist */,
 				1AF385F325E812170006AE59 /* SceneDelegate.swift */,
 			);
 			name = "Support Files";
@@ -137,10 +139,11 @@
 		1AF3864B25E838EF0006AE59 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
-				1AF385F525E812170006AE59 /* SigninVC.swift */,
+				D7578E5625EF6F1500D677E8 /* SigninVC.swift */,
 				1AF3865B25E8403E0006AE59 /* AuthTextField.swift */,
 				1AF3867D25E877B40006AE59 /* LoadingButton.swift */,
 				1AF03DC325EDC18500E3FF80 /* HorizontalActionLabel.swift */,
+				D7578E5225EF6DD100D677E8 /* SignUpVC.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -242,9 +245,9 @@
 			files = (
 				1AF385FE25E8121A0006AE59 /* LaunchScreen.storyboard in Resources */,
 				1AF3864825E8378D0006AE59 /* Main.storyboard in Resources */,
-				1AF3860725E814990006AE59 /* GoogleService-Info.plist in Resources */,
 				1AF385FB25E8121A0006AE59 /* Assets.xcassets in Resources */,
 				1AF385F925E812170006AE59 /* Auth.storyboard in Resources */,
+				D7578E4F25EF6AFC00D677E8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -302,11 +305,12 @@
 				1AF3865625E83E4E0006AE59 /* UIViewController+HideKeyboard.swift in Sources */,
 				1AF3862525E816540006AE59 /* User.swift in Sources */,
 				1AF3864E25E83B850006AE59 /* FeedVC.swift in Sources */,
-				1AF385F625E812170006AE59 /* SigninVC.swift in Sources */,
 				1AF3865F25E855BE0006AE59 /* UIColor+ColorScheme.swift in Sources */,
 				1AF3864025E81A9E0006AE59 /* AuthProvider.swift in Sources */,
+				D7578E5325EF6DD200D677E8 /* SignUpVC.swift in Sources */,
 				1AF385F225E812170006AE59 /* AppDelegate.swift in Sources */,
 				1AF3864325E81C4A0006AE59 /* Event.swift in Sources */,
+				D7578E5725EF6F1500D677E8 /* SigninVC.swift in Sources */,
 				1AF3865225E83C1A0006AE59 /* FeedNavigationVC.swift in Sources */,
 				1AF3868125E88AA20006AE59 /* FIRDatabaseRequest.swift in Sources */,
 				1AF385F425E812170006AE59 /* SceneDelegate.swift in Sources */,
