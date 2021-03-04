@@ -68,6 +68,29 @@ class FIRAuthProvider {
     }
     
     /* TODO: Firebase sign up handler, add user to firestore */
+    func signUp(withFullname fullname: String, withEmail email: String, withUsername username: String,
+                withPassword password: String, completion: ((Result<User, Error>)->Void)?) {
+        
+        auth.createUser(withEmail: email, password: password) { [weak self] authResult, error in
+            if let error = error {
+                let nsError = error as NSError
+                //let desc = nsError.description
+                completion?(.failure(nsError))
+                return
+            }
+            
+            guard let authResult = authResult else {
+                completion?(.failure(SignInErrors.internalError))
+                return
+            }
+            
+            //setUser and link user
+            let u: User = User(uid: authResult.user.uid, username: username, email: email, fullname: fullname, savedEvents: [])
+            FIRDatabaseRequest.shared.setUser(u) { () }
+            var newCompletion: (Result<User, SignInErrors>)->Void = {(Result<User, SignInErrors)}
+            self?.linkUser(withuid: authResult.user.uid, completion: { (Result<User, SignInErrors>)->Void} )
+        }
+    }
     
     func isSignedIn() -> Bool {
         return auth.currentUser != nil
@@ -98,6 +121,7 @@ class FIRAuthProvider {
             completion?(.success(user))
         }
     }
+    
     
     private func unlinkCurrentUser() {
         userListener?.remove()

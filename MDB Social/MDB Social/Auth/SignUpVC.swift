@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import NotificationBannerSwift
 
 class SignUpVC: UIViewController {
     
@@ -62,7 +63,7 @@ class SignUpVC: UIViewController {
         btn.layer.backgroundColor = UIColor.primary.cgColor
         btn.setTitle("Sign Up!", for: .normal)
         btn.setTitleColor(.white, for: .normal)
-        btn.titleLabel?.font = .systemFont(ofSize: 25, weight: .bold)
+        btn.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
         btn.isUserInteractionEnabled = true
         
         btn.translatesAutoresizingMaskIntoConstraints = false
@@ -73,9 +74,12 @@ class SignUpVC: UIViewController {
     
     private let contentEdgeInset = UIEdgeInsets(top: 35, left: 40, bottom: 30, right: 40)
     
+    private var bannerQueue = NotificationBannerQueue(maxBannersOnScreenSimultaneously: 1)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        //view.backgroundColor = UIColor(red: 246/255, green: 244/255, blue: 244/255, alpha: 1)
+        view.backgroundColor = .background
         view.addSubview(titleLabel)
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: contentEdgeInset.top),
@@ -105,6 +109,63 @@ class SignUpVC: UIViewController {
             signUpButton.heightAnchor.constraint(equalToConstant: signupButtonHeight)
         ])
         
-        signUpButton.layer.cornerRadius = signUpButton / 2
+        signUpButton.layer.cornerRadius = signupButtonHeight / 2
+        signUpButton.addTarget(self, action: #selector(didTapSignUp(_:)), for: .touchUpInside)
+    }
+    
+    @objc func didTapSignUp(_ sender: UIButton) {
+        guard let fullName = fullNameTextField.text, fullName != "" else {
+            showErrorBanner(withTitle: "Missing full name",
+                            subtitle: "Please provide a full name")
+            return
+        }
+        
+        guard let email = emailTextField.text, email != "" else {
+            showErrorBanner(withTitle: "Missing email",
+                            subtitle: "Please provide an email")
+            return
+        }
+        
+        guard let username = usernameTextField.text, username != "" else {
+            showErrorBanner(withTitle: "Missing username",
+                            subtitle: "Please provide a username")
+            return
+        }
+        
+        guard let password = passwordTextField.text, password != "" else {
+            showErrorBanner(withTitle: "Missing password",
+                            subtitle: "Please provide a password")
+            return
+        }
+        
+        signUpButton.showLoading()
+        FIRAuthProvider.shared.signUp(withFullname: fullName, withEmail: email, withUsername: username,
+                                      withPassword: password) { [weak self] result in
+            switch result {
+            case .success:
+                //do stuff on success
+                return
+            case .failure(let error):
+                self?.showErrorBanner(withTitle: error.localizedDescription)
+            }
+        }
+        
+    }
+    
+    private func showErrorBanner(withTitle title: String, subtitle: String? = nil) {
+        guard bannerQueue.numberOfBanners == 0 else { return }
+        let banner = FloatingNotificationBanner(title: title, subtitle: subtitle,
+                                                titleFont: .systemFont(ofSize: 17, weight: .medium),
+                                                subtitleFont: subtitle != nil ?
+                                                    .systemFont(ofSize: 14, weight: .regular) : nil,
+                                                style: .warning)
+        
+        banner.show(bannerPosition: .top,
+                    queue: bannerQueue,
+                    edgeInsets: UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15),
+                    cornerRadius: 10,
+                    shadowColor: .primaryText,
+                    shadowOpacity: 0.3,
+                    shadowBlurRadius: 10)
     }
 }

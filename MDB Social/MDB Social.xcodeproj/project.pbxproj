@@ -75,7 +75,6 @@
 		1AF385E525E812170006AE59 = {
 			isa = PBXGroup;
 			children = (
-				D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */,
 				1AF385F025E812170006AE59 /* MDB Social */,
 				1AF385EF25E812170006AE59 /* Products */,
 				3EC272BECC8A6647DC74B393 /* Pods */,
@@ -110,6 +109,7 @@
 			children = (
 				1AF385F125E812170006AE59 /* AppDelegate.swift */,
 				1AF385FF25E8121A0006AE59 /* Info.plist */,
+				D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */,
 				1AF385F325E812170006AE59 /* SceneDelegate.swift */,
 			);
 			name = "Support Files";
