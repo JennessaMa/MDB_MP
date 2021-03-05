@@ -9,6 +9,24 @@ import UIKit
 
 class FeedVC: UIViewController {
     
+    private var events: [Event] = FIRDatabaseRequest.shared.getEvents()
+    
+    let titleLabel: UILabel = {
+        let lbl = UILabel()
+        lbl.text = "Socials"
+        lbl.translatesAutoresizingMaskIntoConstraints = false
+        return lbl
+    }()
+    
+    let collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.minimumLineSpacing = 15
+        layout.minimumInteritemSpacing = 0
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(EventCell.self, forCellWithReuseIdentifier: EventCell.reuseIdentifier)
+        return collectionView
+    }()
+    
     private let signOutButton: UIButton = {
         let btn = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
         btn.backgroundColor = .primary
@@ -26,6 +44,12 @@ class FeedVC: UIViewController {
         
         signOutButton.center = view.center
         signOutButton.addTarget(self, action: #selector(didTapSignOut(_:)), for: .touchUpInside)
+        
+        view.addSubview(titleLabel)
+        
+        view.addSubview(collectionView)
+        collectionView.dataSource = self
+        collectionView.delegate = self
     }
     
     @objc func didTapSignOut(_ sender: UIButton) {
@@ -38,5 +62,26 @@ class FeedVC: UIViewController {
             let duration: TimeInterval = 0.3
             UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
         }
+    }
+}
+
+extension FeedVC: UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return events.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let event = events[indexPath.item]
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EventCell.reuseIdentifier, for: indexPath) as! EventCell
+        cell.event = event
+        return cell
+    }
+}
+
+extension FeedVC: UICollectionViewDelegateFlowLayout {
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: view.frame.width / 1.5, height: 120)
     }
 }

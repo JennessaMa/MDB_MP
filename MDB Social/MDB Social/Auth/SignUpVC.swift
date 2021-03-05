@@ -143,8 +143,14 @@ class SignUpVC: UIViewController {
                                       withPassword: password) { [weak self] result in
             switch result {
             case .success:
-                //do stuff on success
-                return
+                //copied from SignInVC
+                guard let window = UIApplication.shared
+                        .windows.filter({ $0.isKeyWindow }).first else { return }
+                let vc = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController()
+                window.rootViewController = vc
+                let options: UIView.AnimationOptions = .transitionCrossDissolve
+                let duration: TimeInterval = 0.3
+                UIView.transition(with: window, duration: duration, options: options, animations: {}, completion: nil)
             case .failure(let error):
                 self?.showErrorBanner(withTitle: error.localizedDescription)
             }

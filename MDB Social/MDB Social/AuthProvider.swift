@@ -87,8 +87,7 @@ class FIRAuthProvider {
             //setUser and link user
             let u: User = User(uid: authResult.user.uid, username: username, email: email, fullname: fullname, savedEvents: [])
             FIRDatabaseRequest.shared.setUser(u) { () }
-            var newCompletion: (Result<User, SignInErrors>)->Void = {(Result<User, SignInErrors)}
-            self?.linkUser(withuid: authResult.user.uid, completion: { (Result<User, SignInErrors>)->Void} )
+            self?.linkUserSignUp(withuid: authResult.user.uid, completion: completion)
         }
     }
     
@@ -114,6 +113,25 @@ class FIRAuthProvider {
             }
             guard let user = try? document.data(as: User.self) else {
                 completion?(.failure(.errorDecodingUserDoc))
+                return
+            }
+            
+            self?.currentUser = user
+            completion?(.success(user))
+        }
+    }
+    
+    //copy and pasted linkUser except it expects an Error instead of SignInError
+    private func linkUserSignUp(withuid uid: String,
+                          completion: ((Result<User, Error>)->Void)?) {
+        
+        userListener = db.collection("users").document(uid).addSnapshotListener { [weak self] docSnapshot, error in
+            guard let document = docSnapshot else {
+                completion?(.failure(error!))
+                return
+            }
+            guard let user = try? document.data(as: User.self) else {
+                completion?(.failure(error!))
                 return
             }
             

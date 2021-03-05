@@ -33,4 +33,43 @@ class FIRDatabaseRequest {
     }
     
     /* TODO: Events getter */
+    func getEvents()->[Event] {
+        var events: [Event] = []
+        
+        //follows "get data once" section
+//        db.collection("events").order(by: "startTimeStamp", descending: true).getDocuments() { (querySnapshot, err) in
+//            if let err = err {
+//                print("Error getting documents: \(err)")
+//            } else {
+//                for document in querySnapshot!.documents {
+//                    guard let event = try? document.data(as: Event.self) else {
+//                        //do nothing if failed to get event
+//                        return
+//                    }
+//                    events.append(event)
+//                }
+//            }
+//        }
+        
+        //follows "Listen for realtime updates" section
+        db.collection("events").order(by: "startTimeStamp", descending: true)
+                .addSnapshotListener{ querySnapshot, error in
+                guard let documents = querySnapshot?.documents else {
+                    print("Error fetching documents: \(error!)")
+                    return
+                }
+                for document in documents {
+                    guard let event = try? document.data(as: Event.self) else {
+                        //do nothing if failed to get event
+                        return
+                    }
+                    events.append(event)
+                }
+            }
+        
+        //sort events to display most recent ones first
+        //events.sort(by: { event1, event2 in return event1.startDate > event2.startDate })
+        
+        return events
+    }
 }

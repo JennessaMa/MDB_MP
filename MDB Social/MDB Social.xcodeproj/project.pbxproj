@@ -29,6 +29,7 @@
 		D7578E4F25EF6AFC00D677E8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */; };
 		D7578E5325EF6DD200D677E8 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5225EF6DD100D677E8 /* SignUpVC.swift */; };
 		D7578E5725EF6F1500D677E8 /* SigninVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5625EF6F1500D677E8 /* SigninVC.swift */; };
+		D75E817325F20C410087CDC1 /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75E817225F20C400087CDC1 /* EventCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D7578E5225EF6DD100D677E8 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		D7578E5625EF6F1500D677E8 /* SigninVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SigninVC.swift; sourceTree = "<group>"; };
+		D75E817225F20C400087CDC1 /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		E51BF3FE48C081C2540BE42E /* Pods_MDB_Social.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MDB_Social.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -153,6 +155,7 @@
 			children = (
 				1AF3864D25E83B850006AE59 /* FeedVC.swift */,
 				1AF3865125E83C1A0006AE59 /* FeedNavigationVC.swift */,
+				D75E817225F20C400087CDC1 /* EventCell.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				1AF3865625E83E4E0006AE59 /* UIViewController+HideKeyboard.swift in Sources */,
 				1AF3862525E816540006AE59 /* User.swift in Sources */,
 				1AF3864E25E83B850006AE59 /* FeedVC.swift in Sources */,
+				D75E817325F20C410087CDC1 /* EventCell.swift in Sources */,
 				1AF3865F25E855BE0006AE59 /* UIColor+ColorScheme.swift in Sources */,
 				1AF3864025E81A9E0006AE59 /* AuthProvider.swift in Sources */,
 				D7578E5325EF6DD200D677E8 /* SignUpVC.swift in Sources */,
