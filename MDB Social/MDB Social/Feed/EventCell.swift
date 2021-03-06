@@ -16,6 +16,7 @@ class EventCell: UICollectionViewCell {
     var event: Event? {
         didSet {
             //set picture of event, name of member, name of event, name of people who RSVP'd
+            //FIRDatabaseRequest.shared.db.
             if let url: URL = URL(string: (event?.photoURL)!) {
                 if let data = try? Data(contentsOf: url) {
                         imageView.image = UIImage(data: data)

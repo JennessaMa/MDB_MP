@@ -99,6 +99,7 @@ class FIRAuthProvider {
         do {
             try auth.signOut()
             unlinkCurrentUser()
+            FIRDatabaseRequest.shared.listener?.remove()
             completion?()
         } catch { }
     }

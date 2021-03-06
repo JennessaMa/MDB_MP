@@ -13,6 +13,8 @@ class FIRDatabaseRequest {
     static let shared = FIRDatabaseRequest()
     
     let db = Firestore.firestore()
+    
+    var listener: ListenerRegistration?
         
     func setUser(_ user: User, completion: (()->Void)?) {
         guard let uid = user.uid else { return }
@@ -37,7 +39,7 @@ class FIRDatabaseRequest {
     func getEvents(vc: FeedVC)->[Event] {
         var events: [Event] = []
         if (FIRAuthProvider.shared.isSignedIn()) {
-            let listener = db.collection("events").order(by: "startTimeStamp", descending: true)
+            listener = db.collection("events").order(by: "startTimeStamp", descending: true)
                     .addSnapshotListener { querySnapshot, error in
                     events = []
                         if (FIRAuthProvider.shared.isSignedIn()) {
@@ -57,9 +59,7 @@ class FIRDatabaseRequest {
                         }
                         
                 }
-            if (!FIRAuthProvider.shared.isSignedIn()) {
-                listener.remove()
-            }
+        
             return events
         }
         //this never gets called?
