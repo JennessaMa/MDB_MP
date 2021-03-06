@@ -16,14 +16,15 @@ class EventCell: UICollectionViewCell {
     var event: Event? {
         didSet {
             //set picture of event, name of member, name of event, name of people who RSVP'd
-            //FIRDatabaseRequest.shared.db.
-            if let url: URL = URL(string: (event?.photoURL)!) {
-                if let data = try? Data(contentsOf: url) {
-                        imageView.image = UIImage(data: data)
-                    }
-            } else {
-                print("ERROR GETTING IMAGE FROM URL")
+            let gsReference = FIRStorage.shared.storage.reference(forURL: event!.photoURL)
+            gsReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                if let error = error {
+                    print("bad stuff happened: \(error)")
+                  } else {
+                    self.imageView.image = UIImage(data: data!)
+                  }
             }
+            
             nameEvent.text = event?.name
             
             //userIDs = [creator, rsvpd1, rsvpd2, ...]
@@ -78,7 +79,7 @@ class EventCell: UICollectionViewCell {
     
     private let nameEvent: UILabel = {
         let label = UILabel()
-        label.font = UIFont.boldSystemFont(ofSize: 20)
+        label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = .darkGray
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -108,9 +109,23 @@ class EventCell: UICollectionViewCell {
         contentView.addSubview(nameEvent)
         contentView.addSubview(nameMember)
         contentView.addSubview(rsvpd)
-        contentView.layer.cornerRadius = 10
-        //contentView.layer.shadowColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1).cgColor //black?
-        contentView.layer.shadowRadius = 2.0
+        
+        //source for rounded cells: https://medium.com/dev-genius/swift-how-to-create-a-rounded-collectionviewcell-with-shadow-d696bd46c43f
+        self.layer.cornerRadius = 15.0
+        self.layer.borderWidth = 5.0
+        self.layer.borderColor = UIColor.clear.cgColor
+        self.layer.masksToBounds = true
+        self.contentView.layer.cornerRadius = 15.0
+        self.contentView.layer.borderWidth = 5.0
+        self.contentView.layer.borderColor = UIColor.clear.cgColor
+        self.contentView.layer.masksToBounds = true
+        self.layer.shadowColor = UIColor.white.cgColor
+        self.layer.shadowOffset = CGSize(width: 0, height: 0.0)
+        self.layer.shadowRadius = 6.0
+        self.layer.shadowOpacity = 0.6
+        self.layer.cornerRadius = 15.0
+        self.layer.masksToBounds = false
+        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.contentView.layer.cornerRadius).cgPath
         
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
