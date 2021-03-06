@@ -141,6 +141,10 @@ class SignUpVC: UIViewController {
         signUpButton.showLoading()
         FIRAuthProvider.shared.signUp(withFullname: fullName, withEmail: email, withUsername: username,
                                       withPassword: password) { [weak self] result in
+            defer {
+                self?.signUpButton.hideLoading()
+            }
+            
             switch result {
             case .success:
                 //copied from SignInVC

@@ -108,10 +108,12 @@ class FIRAuthProvider {
         
         userListener = db.collection("users").document(uid).addSnapshotListener { [weak self] docSnapshot, error in
             guard let document = docSnapshot else {
+                print("something bad happened while getting document of linking user")
                 completion?(.failure(.errorFetchingUserDoc))
                 return
             }
             guard let user = try? document.data(as: User.self) else {
+                print("cant convert linking user to a User object")
                 completion?(.failure(.errorDecodingUserDoc))
                 return
             }

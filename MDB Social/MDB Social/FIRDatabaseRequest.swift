@@ -60,7 +60,6 @@ class FIRDatabaseRequest {
             if (!FIRAuthProvider.shared.isSignedIn()) {
                 listener.remove()
             }
-            print("returning events array")
             return events
         }
         //this never gets called?

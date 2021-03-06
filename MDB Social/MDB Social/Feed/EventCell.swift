@@ -26,28 +26,45 @@ class EventCell: UICollectionViewCell {
             nameEvent.text = event?.name
             
             //userIDs = [creator, rsvpd1, rsvpd2, ...]
-            var userIDs: [UserID] = [event!.creator]
-            userIDs.append(contentsOf: event!.rsvpUsers)
+            //var userIDs: [UserID] = [event!.creator]
+            //userIDs.append(contentsOf: event!.rsvpUsers)
             
-            for uid in userIDs {
-                let docRef = FIRDatabaseRequest.shared.db.collection("users").document(uid)
-                docRef.getDocument(completion: { (querySnapshot, err) in
-                    if let err = err {
-                        print("Error getting documents: \(err)")
-                        print("Error in getting the userIDs of rsvpd")
-                    } else {
-                        guard let user = try? querySnapshot?.data(as: User.self) else {
-                            return
-                        }
-                        if (uid == self.event?.creator) {
-                            self.nameMember.text = user.fullname
-                        } else {
-                            self.rsvpNames.append(user.fullname)
-                        }
+            rsvpd.text = "RSVP'd: \(event?.rsvpUsers.count ?? 0)"
+            
+            //lists the NAMES of the rsvp'd rather than just count
+//            for uid in userIDs {
+//                let docRef = FIRDatabaseRequest.shared.db.collection("users").document(uid)
+//                docRef.getDocument(completion: { (querySnapshot, err) in
+//                    if let err = err {
+//                        print("Error getting documents: \(err)")
+//                        print("Error in getting the userIDs of rsvpd")
+//                    } else {
+//                        guard let user = try? querySnapshot?.data(as: User.self) else {
+//                            return
+//                        }
+//                        if (uid == self.event?.creator) {
+//                            self.nameMember.text = user.fullname
+//                        } else {
+//                            self.rsvpNames.append(user.fullname)
+//                        }
+//                    }
+//                })
+//            }
+            //rsvpd.text = "RSVP'd: " + rsvpNames.joined(separator: ", ")
+            
+            let docRef = FIRDatabaseRequest.shared.db.collection("users").document(event!.creator)
+            docRef.getDocument(completion: { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting docuemnt of event creator: \(err)")
+                } else {
+                    guard let user = try? querySnapshot?.data(as: User.self) else {
+                        print("error in getting user of creator")
+                        return
                     }
-                })
-            }
-            rsvpd.text = "RSVP'd: " + rsvpNames.joined(separator: ", ")
+                    self.nameMember.text = user.fullname
+                }
+            })
+            
         }
     }
     
