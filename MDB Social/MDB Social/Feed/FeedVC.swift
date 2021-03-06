@@ -9,11 +9,20 @@ import UIKit
 
 class FeedVC: UIViewController {
     
-    private var events: [Event] = FIRDatabaseRequest.shared.getEvents()
+    var events: [Event]?
     
+     func updateEvents(newEvents: [Event]) {
+        print("in updatingEvents")
+        events = newEvents
+        collectionView.reloadData()
+    }
+        
     let titleLabel: UILabel = {
         let lbl = UILabel()
         lbl.text = "Socials"
+        lbl.font = UIFont.boldSystemFont(ofSize: 30)
+        lbl.textColor = UIColor(red: 133/255, green: 169/255, blue: 255/255, alpha: 1)
+        lbl.textAlignment = .center
         lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
@@ -24,30 +33,49 @@ class FeedVC: UIViewController {
         layout.minimumInteritemSpacing = 0
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(EventCell.self, forCellWithReuseIdentifier: EventCell.reuseIdentifier)
+        
         return collectionView
     }()
     
     private let signOutButton: UIButton = {
-        let btn = UIButton(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-        btn.backgroundColor = .primary
+        //let btn = UIButton(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        let btn = UIButton()
+        btn.backgroundColor = UIColor(red: 182/255, green: 204/255, blue: 254/255, alpha: 1)
         btn.setImage(UIImage(systemName: "xmark"), for: .normal)
         let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30, weight: .medium))
         btn.setPreferredSymbolConfiguration(config, forImageIn: .normal)
         btn.tintColor = .white
-        btn.layer.cornerRadius = 50
-        
+        btn.layer.cornerRadius = 10
+        btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
     
     override func viewDidLoad() {
+        events = FIRDatabaseRequest.shared.getEvents(vc: self)
         view.addSubview(signOutButton)
-        
-        signOutButton.center = view.center
+        NSLayoutConstraint.activate([
+            signOutButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+            signOutButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            signOutButton.widthAnchor.constraint(equalTo: signOutButton.heightAnchor, constant: 10)
+
+        ])
         signOutButton.addTarget(self, action: #selector(didTapSignOut(_:)), for: .touchUpInside)
         
         view.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+        ])
         
         view.addSubview(collectionView)
+        collectionView.frame = view.bounds.inset(by: UIEdgeInsets(top: 170, left: 10, bottom: 0, right: 10))
+//        NSLayoutConstraint.activate([
+//            collectionView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+//            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+//            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -10)
+//        ])
+        collectionView.backgroundColor = .clear
         collectionView.dataSource = self
         collectionView.delegate = self
     }
@@ -68,11 +96,11 @@ class FeedVC: UIViewController {
 extension FeedVC: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return events.count
+        return events?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let event = events[indexPath.item]
+        let event = events?[indexPath.item]
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EventCell.reuseIdentifier, for: indexPath) as! EventCell
         cell.event = event
         return cell
@@ -82,6 +110,6 @@ extension FeedVC: UICollectionViewDataSource {
 extension FeedVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width / 1.5, height: 120)
+        return CGSize(width: view.frame.width * (4/5), height: 120)
     }
 }

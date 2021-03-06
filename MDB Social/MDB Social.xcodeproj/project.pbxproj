@@ -95,6 +95,7 @@
 		1AF385F025E812170006AE59 /* MDB Social */ = {
 			isa = PBXGroup;
 			children = (
+				D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */,
 				1AF3865425E83D900006AE59 /* Extensions */,
 				1AF3864C25E838F80006AE59 /* Feed */,
 				1AF3864B25E838EF0006AE59 /* Auth */,
@@ -111,7 +112,6 @@
 			children = (
 				1AF385F125E812170006AE59 /* AppDelegate.swift */,
 				1AF385FF25E8121A0006AE59 /* Info.plist */,
-				D7578E4E25EF6AFC00D677E8 /* GoogleService-Info.plist */,
 				1AF385F325E812170006AE59 /* SceneDelegate.swift */,
 			);
 			name = "Support Files";

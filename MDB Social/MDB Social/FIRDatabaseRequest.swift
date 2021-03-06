@@ -13,7 +13,7 @@ class FIRDatabaseRequest {
     static let shared = FIRDatabaseRequest()
     
     let db = Firestore.firestore()
-    
+        
     func setUser(_ user: User, completion: (()->Void)?) {
         guard let uid = user.uid else { return }
         do {
@@ -32,44 +32,38 @@ class FIRDatabaseRequest {
         } catch { }
     }
     
+    
     /* TODO: Events getter */
-    func getEvents()->[Event] {
+    func getEvents(vc: FeedVC)->[Event] {
         var events: [Event] = []
-        
-        //follows "get data once" section
-//        db.collection("events").order(by: "startTimeStamp", descending: true).getDocuments() { (querySnapshot, err) in
-//            if let err = err {
-//                print("Error getting documents: \(err)")
-//            } else {
-//                for document in querySnapshot!.documents {
-//                    guard let event = try? document.data(as: Event.self) else {
-//                        //do nothing if failed to get event
-//                        return
-//                    }
-//                    events.append(event)
-//                }
-//            }
-//        }
-        
-        //follows "Listen for realtime updates" section
-        db.collection("events").order(by: "startTimeStamp", descending: true)
-                .addSnapshotListener{ querySnapshot, error in
-                guard let documents = querySnapshot?.documents else {
-                    print("Error fetching documents: \(error!)")
-                    return
+        if (FIRAuthProvider.shared.isSignedIn()) {
+            let listener = db.collection("events").order(by: "startTimeStamp", descending: true)
+                    .addSnapshotListener { querySnapshot, error in
+                    events = []
+                        if (FIRAuthProvider.shared.isSignedIn()) {
+                            guard let documents = querySnapshot?.documents else {
+                                print("Error fetching documents: \(error!)")
+                                print("error in getEvents")
+                                return
+                            }
+                            for document in documents {
+                                guard let event = try? document.data(as: Event.self) else {
+                                    print("problem converting document into event")
+                                    return
+                                }
+                                events.append(event)
+                            }
+                            vc.updateEvents(newEvents: events)
+                        }
+                        
                 }
-                for document in documents {
-                    guard let event = try? document.data(as: Event.self) else {
-                        //do nothing if failed to get event
-                        return
-                    }
-                    events.append(event)
-                }
+            if (!FIRAuthProvider.shared.isSignedIn()) {
+                listener.remove()
             }
-        
-        //sort events to display most recent ones first
-        //events.sort(by: { event1, event2 in return event1.startDate > event2.startDate })
-        
+            print("returning events array")
+            return events
+        }
+        //this never gets called?
         return events
     }
 }

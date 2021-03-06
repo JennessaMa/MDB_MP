@@ -20,6 +20,8 @@ class EventCell: UICollectionViewCell {
                 if let data = try? Data(contentsOf: url) {
                         imageView.image = UIImage(data: data)
                     }
+            } else {
+                print("ERROR GETTING IMAGE FROM URL")
             }
             nameEvent.text = event?.name
             
@@ -32,6 +34,7 @@ class EventCell: UICollectionViewCell {
                 docRef.getDocument(completion: { (querySnapshot, err) in
                     if let err = err {
                         print("Error getting documents: \(err)")
+                        print("Error in getting the userIDs of rsvpd")
                     } else {
                         guard let user = try? querySnapshot?.data(as: User.self) else {
                             return
@@ -81,15 +84,14 @@ class EventCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .background
-        contentView.backgroundColor = UIColor(red: 226/255, green: 234/255, blue: 252/255, alpha: 1)
+        backgroundColor = UIColor(red: 226/255, green: 234/255, blue: 252/255, alpha: 1)
         
         contentView.addSubview(imageView)
         contentView.addSubview(nameEvent)
         contentView.addSubview(nameMember)
         contentView.addSubview(rsvpd)
         contentView.layer.cornerRadius = 10
-        contentView.layer.shadowColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1).cgColor //black?
+        //contentView.layer.shadowColor = UIColor(red: 1, green: 1, blue: 1, alpha: 1).cgColor //black?
         contentView.layer.shadowRadius = 2.0
         
         NSLayoutConstraint.activate([
