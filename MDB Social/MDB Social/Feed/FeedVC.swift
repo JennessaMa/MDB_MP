@@ -88,7 +88,7 @@ class FeedVC: UIViewController {
         NSLayoutConstraint.activate([
             createEventButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40),
             createEventButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            createEventButton.widthAnchor.constraint(equalToConstant: 130),
+            createEventButton.widthAnchor.constraint(equalToConstant: view.frame.width * (4/5)),
             createEventButton.heightAnchor.constraint(equalToConstant: 43)
         ])
         createEventButton.addTarget(self, action: #selector(didTapCreateEvent(_:)), for: .touchUpInside)
