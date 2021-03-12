@@ -158,11 +158,11 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         
         let currID: UserID = FIRAuthProvider.shared.currentUser!.uid ?? ""
         
-//        var test: URL?
         //upload image to firestore
+        print("picked image data: \(String(describing: pickedImageData))")
         let ref = FIRStorage.shared.storage.reference().child(UUID().uuidString + ".jpeg")
-        
-        _ = ref.putData(pickedImageData!, metadata: nil) { (metadata, error) in
+        _ = ref.putData(pickedImageData!, metadata: FIRStorage.shared.metadata) { (metadata, error) in
+            print("error in putData \(String(describing: error))")
           ref.downloadURL { (url, error) in
             guard let downloadURL = url else {
                 print("ERROR OCCURED WHILE DOWNLOADING URL - error: \(String(describing: error))")
@@ -174,30 +174,6 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
             FIRDatabaseRequest.shared.setEvent(event, completion: {})
           }
         }
-        
-//        let uploadTask = ref.putData(pickedImageData!, metadata: nil) { (metadata, error) in
-//            print("very sTART OF UPLOAD TASK!!!")
-//            guard let metadata = metadata else {
-//                // Uh-oh, an error occurred!
-//                print("ERROR OCCURED AT BEGINNING")
-//                return
-//              }
-//            print("inside upload task")
-//              ref.downloadURL { (url, error) in
-//                guard let downloadURL = url else {
-//                  print("ERROR OCCURED")
-//                  return
-//                }
-//                print("SET DOWNLOAD URL (I.E. TEST)")
-//                test = downloadURL
-//              }
-//        }
-        //create event
-//        print("url string: \(test)")
-//        let event: Event = Event(name: name1, description: desc, photoURL: test!.absoluteString, startTimeStamp: Timestamp(date: pickedDate!), creator: currID, rsvpUsers: [])
-//        //create document on firestore and set data
-//        FIRDatabaseRequest.shared.db.collection("events").document(event.id!)
-//        FIRDatabaseRequest.shared.setEvent(event, completion: {})
         dismiss(animated: true, completion: nil)
     }
     
@@ -262,7 +238,8 @@ extension CreateEventVC: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
-                pickedImage = image
+                //pickedImage = image
+                pickedImage = image.resized(withPercentage: 0.1)
                 pickedImageData = pickedImage?.jpegData(compressionQuality: 0.1)
                 print("successfully set image")
             }
@@ -276,4 +253,15 @@ extension CreateEventVC: UIImagePickerControllerDelegate {
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
     }
+}
+
+extension UIImage {
+    func resized(withPercentage percentage: CGFloat, isOpaque: Bool = true) -> UIImage? {
+            let canvas = CGSize(width: size.width * percentage, height: size.height * percentage)
+            let format = imageRendererFormat
+            format.opaque = isOpaque
+            return UIGraphicsImageRenderer(size: canvas, format: format).image {
+                _ in draw(in: CGRect(origin: .zero, size: canvas))
+            }
+        }
 }
