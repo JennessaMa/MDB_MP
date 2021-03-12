@@ -16,7 +16,6 @@ class EventCell: UICollectionViewCell {
     
     var event: Event? {
         didSet {
-            print("BEFORE GETTING THE REFERENCE ")
             print("event url: \(event!.photoURL)")
             //set picture of event, name of member, name of event, name of people who RSVP'd
             let gsReference: StorageReference = FIRStorage.shared.storage.reference(forURL: event!.photoURL)
@@ -84,6 +83,7 @@ class EventCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 23)
         label.textColor = .darkGray
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -131,16 +131,16 @@ class EventCell: UICollectionViewCell {
         self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: self.contentView.layer.cornerRadius).cgPath
         
         NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10),
-            imageView.widthAnchor.constraint(equalToConstant: 90),
-            imageView.heightAnchor.constraint(equalToConstant: 90),
+            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 35),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 25),
+            imageView.widthAnchor.constraint(equalToConstant: 100),
+            imageView.heightAnchor.constraint(equalToConstant: 100),
             nameEvent.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            nameEvent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            nameEvent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
             nameMember.topAnchor.constraint(equalTo: nameEvent.bottomAnchor, constant: 10),
-            nameMember.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            nameMember.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25),
             rsvpd.topAnchor.constraint(equalTo: nameMember.bottomAnchor, constant: 10),
-            rsvpd.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10)
+            rsvpd.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -25)
         ])
     }
     

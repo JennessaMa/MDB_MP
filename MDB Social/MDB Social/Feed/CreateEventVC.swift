@@ -159,7 +159,6 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         let currID: UserID = FIRAuthProvider.shared.currentUser!.uid ?? ""
         
         //upload image to firestore
-        print("picked image data: \(String(describing: pickedImageData))")
         let ref = FIRStorage.shared.storage.reference().child(UUID().uuidString + ".jpeg")
         _ = ref.putData(pickedImageData!, metadata: FIRStorage.shared.metadata) { (metadata, error) in
             print("error in putData \(String(describing: error))")

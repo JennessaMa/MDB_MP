@@ -32,6 +32,7 @@
 		D7578E5325EF6DD200D677E8 /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5225EF6DD100D677E8 /* SignUpVC.swift */; };
 		D7578E5725EF6F1500D677E8 /* SigninVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7578E5625EF6F1500D677E8 /* SigninVC.swift */; };
 		D75E817325F20C410087CDC1 /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75E817225F20C400087CDC1 /* EventCell.swift */; };
+		D7FE1E1925FC0954008AAD59 /* EventDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7FE1E1825FC0954008AAD59 /* EventDetailsVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +64,7 @@
 		D7578E5225EF6DD100D677E8 /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		D7578E5625EF6F1500D677E8 /* SigninVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SigninVC.swift; sourceTree = "<group>"; };
 		D75E817225F20C400087CDC1 /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
+		D7FE1E1825FC0954008AAD59 /* EventDetailsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsVC.swift; sourceTree = "<group>"; };
 		E51BF3FE48C081C2540BE42E /* Pods_MDB_Social.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MDB_Social.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -162,6 +164,7 @@
 				1AF3865125E83C1A0006AE59 /* FeedNavigationVC.swift */,
 				D75E817225F20C400087CDC1 /* EventCell.swift */,
 				D74D46CB25F8AF79003EEFC7 /* CreateEventVC.swift */,
+				D7FE1E1825FC0954008AAD59 /* EventDetailsVC.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				1AF3865225E83C1A0006AE59 /* FeedNavigationVC.swift in Sources */,
 				1AF3868125E88AA20006AE59 /* FIRDatabaseRequest.swift in Sources */,
 				1AF385F425E812170006AE59 /* SceneDelegate.swift in Sources */,
+				D7FE1E1925FC0954008AAD59 /* EventDetailsVC.swift in Sources */,
 				1AF3865925E83E720006AE59 /* UIColor+Hex.swift in Sources */,
 				D74D46CC25F8AF79003EEFC7 /* CreateEventVC.swift in Sources */,
 				1AF3865C25E8403E0006AE59 /* AuthTextField.swift in Sources */,

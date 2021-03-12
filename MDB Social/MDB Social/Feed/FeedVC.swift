@@ -111,7 +111,6 @@ class FeedVC: UIViewController {
         present(vc, animated: true, completion: nil)
     }
     
-    
 }
 
 extension FeedVC: UICollectionViewDataSource {
@@ -131,6 +130,13 @@ extension FeedVC: UICollectionViewDataSource {
 extension FeedVC: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width * (4/5), height: 120)
+        return CGSize(width: view.frame.width * (4/5), height: 160)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let event = events?[indexPath.item]
+        let vc = EventDetailsVC()
+        vc.currEvent = event
+        present(vc, animated: true, completion: nil)
     }
 }
