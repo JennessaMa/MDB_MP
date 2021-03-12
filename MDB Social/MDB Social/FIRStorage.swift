@@ -13,5 +13,5 @@ class FIRStorage {
     static let shared = FIRStorage()
     
     let storage = Storage.storage()
-    
+        
 }

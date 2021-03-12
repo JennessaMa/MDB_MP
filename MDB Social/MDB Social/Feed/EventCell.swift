@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseStorage
 
 class EventCell: UICollectionViewCell {
     
@@ -15,8 +16,10 @@ class EventCell: UICollectionViewCell {
     
     var event: Event? {
         didSet {
+            print("BEFORE GETTING THE REFERENCE ")
+            print("event url: \(event!.photoURL)")
             //set picture of event, name of member, name of event, name of people who RSVP'd
-            let gsReference = FIRStorage.shared.storage.reference(forURL: event!.photoURL)
+            let gsReference: StorageReference = FIRStorage.shared.storage.reference(forURL: event!.photoURL)
             gsReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
                 if let error = error {
                     print("bad stuff happened: \(error)")

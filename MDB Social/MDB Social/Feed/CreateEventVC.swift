@@ -7,6 +7,7 @@
 
 import Foundation
 import NotificationBannerSwift
+import FirebaseFirestore
 
 class CreateEventVC: UIViewController, UINavigationControllerDelegate {
     
@@ -64,7 +65,7 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
     }()
     
     private var pickedDate: Date?
-    
+        
     private let imagePicker: UIImagePickerController = {
         let ip = UIImagePickerController()
         return ip
@@ -80,6 +81,10 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
     }()
     
     private var pickedImage: UIImage?
+    
+    private var imageMeta: Any?
+    
+    private var pickedImageData: Data?
     
     private var pickedImageURL: URL?
     
@@ -146,17 +151,54 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
                             subtitle: "Please select an image")
             return
         }
-        if (pickedDate == nil || pickedImageURL == nil) {
+        if (pickedDate == nil || pickedImageData == nil) {
             //will always be a date selected i think (default is current date+time)
             return
         }
         
         let currID: UserID = FIRAuthProvider.shared.currentUser!.uid ?? ""
         
+//        var test: URL?
+        //upload image to firestore
+        let ref = FIRStorage.shared.storage.reference().child(UUID().uuidString + ".jpeg")
         
-        let event: Event = Event(name: name1, description: desc, photoURL: pickedImageURL.absoluteString, startTimeStamp: pickedDate, creator: currID, rsvpUsers: [])
+        _ = ref.putData(pickedImageData!, metadata: nil) { (metadata, error) in
+          ref.downloadURL { (url, error) in
+            guard let downloadURL = url else {
+                print("ERROR OCCURED WHILE DOWNLOADING URL - error: \(String(describing: error))")
+              return
+            }
+            let event: Event = Event(name: name1, description: desc, photoURL: downloadURL.relativeString, startTimeStamp: Timestamp(date: self.pickedDate!), creator: currID, rsvpUsers: [])
+            //create document on firestore and set data
+            FIRDatabaseRequest.shared.db.collection("events").document(event.id!)
+            FIRDatabaseRequest.shared.setEvent(event, completion: {})
+          }
+        }
         
-        FIRDatabaseRequest.shared.setEvent(event, completion: {})
+//        let uploadTask = ref.putData(pickedImageData!, metadata: nil) { (metadata, error) in
+//            print("very sTART OF UPLOAD TASK!!!")
+//            guard let metadata = metadata else {
+//                // Uh-oh, an error occurred!
+//                print("ERROR OCCURED AT BEGINNING")
+//                return
+//              }
+//            print("inside upload task")
+//              ref.downloadURL { (url, error) in
+//                guard let downloadURL = url else {
+//                  print("ERROR OCCURED")
+//                  return
+//                }
+//                print("SET DOWNLOAD URL (I.E. TEST)")
+//                test = downloadURL
+//              }
+//        }
+        //create event
+//        print("url string: \(test)")
+//        let event: Event = Event(name: name1, description: desc, photoURL: test!.absoluteString, startTimeStamp: Timestamp(date: pickedDate!), creator: currID, rsvpUsers: [])
+//        //create document on firestore and set data
+//        FIRDatabaseRequest.shared.db.collection("events").document(event.id!)
+//        FIRDatabaseRequest.shared.setEvent(event, completion: {})
+        dismiss(animated: true, completion: nil)
     }
     
     //stackoverflow credits :') https://stackoverflow.com/questions/41717115/how-to-make-uiimagepickercontroller-for-camera-and-photo-library-at-the-same-tim
@@ -221,12 +263,13 @@ extension CreateEventVC: UIImagePickerControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
                 pickedImage = image
-            print("successfully set image")
+                pickedImageData = pickedImage?.jpegData(compressionQuality: 0.1)
+                print("successfully set image")
             }
         if let url = info[.imageURL] as? URL {
             pickedImageURL = url
-            print("successfully set image url")
         }
+        imageMeta = info[.mediaMetadata]
         picker.dismiss(animated: true, completion: nil)
     }
     
