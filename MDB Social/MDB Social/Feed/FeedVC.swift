@@ -39,7 +39,7 @@ class FeedVC: UIViewController {
     
     private let signOutButton: UIButton = {
         let btn = UIButton()
-        btn.backgroundColor = UIColor(red: 85/255, green: 12/255, blue: 24/255, alpha: 1)
+        btn.backgroundColor = UIColor(red: 217/255, green: 4/255, blue: 41/255, alpha: 1)
         btn.setImage(UIImage(systemName: "xmark"), for: .normal)
         let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 30, weight: .medium))
         btn.setPreferredSymbolConfiguration(config, forImageIn: .normal)

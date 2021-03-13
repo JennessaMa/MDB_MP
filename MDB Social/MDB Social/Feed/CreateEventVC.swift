@@ -240,7 +240,6 @@ extension CreateEventVC: UIImagePickerControllerDelegate {
                 //pickedImage = image
                 pickedImage = image.resized(withPercentage: 0.1)
                 pickedImageData = pickedImage?.jpegData(compressionQuality: 0.1)
-                print("successfully set image")
             }
         if let url = info[.imageURL] as? URL {
             pickedImageURL = url

@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import FirebaseStorage
+import FirebaseFirestore
 
 class EventDetailsVC: UIViewController {
     
@@ -43,14 +44,30 @@ class EventDetailsVC: UIViewController {
                         return
                     }
                     self.nameCreator.text = "Creator: " + user.fullname
+                    
                 }
             })
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm E, d MMM y"
             date.text = "Date: " + formatter.string(from: currEvent!.startDate)
             desc.text = currEvent?.description
+            
+            for id in currEvent!.rsvpUsers {
+                if (FIRAuthProvider.shared.currentUser?.uid == id) {
+                    isRsvpd = true
+                    break
+                }
+            }
+            if (currEvent?.creator == FIRAuthProvider.shared.currentUser?.uid) {
+                isCreator = true
+                print("current user is the creator")
+            }
         }
     }
+    
+    private var isCreator: Bool = false
+    
+    private var isRsvpd: Bool = false
     
     private var imageView: UIImageView = {
         let iv = UIImageView()
@@ -71,7 +88,7 @@ class EventDetailsVC: UIViewController {
     
     private var nameCreator: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18)
+        label.font = .systemFont(ofSize: 20)
         label.textColor = .gray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -80,7 +97,7 @@ class EventDetailsVC: UIViewController {
     
     private var date: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15)
+        label.font = .systemFont(ofSize: 18)
         label.textColor = .gray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -89,8 +106,8 @@ class EventDetailsVC: UIViewController {
     
     private var rsvpd: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15)
-        label.textColor = .lightGray
+        label.font = .systemFont(ofSize: 18)
+        label.textColor = .gray
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -98,7 +115,7 @@ class EventDetailsVC: UIViewController {
     
     private var desc: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 15)
+        label.font = .systemFont(ofSize: 18)
         label.textColor = .gray
         label.textAlignment = .center
         label.numberOfLines = 0 //unlimited # lines
@@ -106,10 +123,49 @@ class EventDetailsVC: UIViewController {
         return label
     }()
     
-    private let contentEdgeInset = UIEdgeInsets(top: 30, left: 20, bottom: 30, right: 20)
+    private var rsvpBtn: UIButton = {
+        let btn = UIButton()
+        btn.backgroundColor = UIColor(red: 141/255, green: 153/255, blue: 174/255, alpha: 1)
+        btn.titleLabel?.font = .boldSystemFont(ofSize: 18)
+        btn.layer.cornerRadius = 20
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+    
+    private var deleteEvent: UIButton = {
+        let btn = UIButton()
+        btn.layer.cornerRadius = 15
+        btn.backgroundColor = UIColor(red: 217/255, green: 4/255, blue: 41/255, alpha: 1)
+        btn.setTitle("Delete Event", for: .normal)
+        btn.titleLabel?.font = .boldSystemFont(ofSize: 15)
+        btn.isHidden = true
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
+    
+    private let contentEdgeInset = UIEdgeInsets(top: 70, left: 20, bottom: 30, right: 20)
     
     override func viewDidLoad() {
         view.backgroundColor = UIColor(red: 193/255, green: 211/255, blue: 254/255, alpha: 1)
+        
+        view.addSubview(deleteEvent)
+        deleteEvent.addTarget(self, action: #selector(didTapDeleteEvent(_:)), for: .touchUpInside)
+        NSLayoutConstraint.activate([
+            deleteEvent.topAnchor.constraint(equalTo: view.topAnchor, constant: 25),
+            deleteEvent.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            deleteEvent.widthAnchor.constraint(equalToConstant: 110)
+        ])
+        
+        if (isCreator) {
+            deleteEvent.isHidden = false
+        }
+        
+        if (isRsvpd) {
+            rsvpBtn.setTitle("Cancel RSVP", for: .normal)
+        } else {
+            rsvpBtn.setTitle("RSVP!", for: .normal)
+        }
+        
         view.addSubview(stack)
         stack.addArrangedSubview(nameEvent)
         stack.addArrangedSubview(imageView)
@@ -117,6 +173,8 @@ class EventDetailsVC: UIViewController {
         stack.addArrangedSubview(date)
         stack.addArrangedSubview(desc)
         stack.addArrangedSubview(rsvpd)
+        stack.addArrangedSubview(rsvpBtn)
+        rsvpBtn.addTarget(self, action: #selector(didTapRsvp(_:)), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: contentEdgeInset.left),
@@ -124,6 +182,76 @@ class EventDetailsVC: UIViewController {
             stack.topAnchor.constraint(equalTo: view.topAnchor, constant: contentEdgeInset.top),
             imageView.heightAnchor.constraint(equalToConstant: 300)
         ])
+        
+        
+    }
+    
+    @objc func didTapRsvp(_ sender: UIButton) {
+        let eventRef = FIRDatabaseRequest.shared.db.collection("events").document(currEvent!.id!)
+        print("path:" + eventRef.path)
+        if (isRsvpd) {
+            isRsvpd = false
+            for i in 0..<currEvent!.rsvpUsers.count {
+                if currEvent?.rsvpUsers[i] == FIRAuthProvider.shared.currentUser?.uid {
+                    eventRef.updateData([
+                        "rsvpUsers": FieldValue.arrayRemove([currEvent!.rsvpUsers[i]])
+                    ]) { err in
+                        if let err = err {
+                            print("Error updating document: \(err)")
+                        } else {
+                            print("Document successfully updated")
+                        }
+                    }
+                    currEvent?.rsvpUsers.remove(at: i)
+                    break
+                }
+            }
+            
+            rsvpBtn.setTitle("RSVP!", for: .normal)
+        } else {
+            isRsvpd = true
+            eventRef.updateData([
+                "rsvpUsers": FieldValue.arrayUnion([(FIRAuthProvider.shared.currentUser?.uid)!])
+            ]) { err in
+                if let err = err {
+                    print("Error updating document: \(err)")
+                } else {
+                    print("Document successfully updated")
+                }
+            }
+
+            currEvent?.rsvpUsers.append((FIRAuthProvider.shared.currentUser?.uid)!)
+            rsvpBtn.setTitle("Cancel RSVP", for: .normal)
+        }
+        
+//        eventRef.updateData(["rsvpUsers": currEvent!.rsvpUsers], completion: { err in
+//            if let err = err {
+//                print("Error updating document: \(err)")
+//            } else {
+//                print("Document successfully updated")
+//            }
+//        })
+//        eventRef.updateData([
+//            "rsvpUsers": currEvent!.rsvpUsers
+//        ]) { err in
+//            if let err = err {
+//                print("Error updating document: \(err)")
+//            } else {
+//                print("Document successfully updated")
+//            }
+//        }
+    }
+    
+    @objc func didTapDeleteEvent(_ sender: UIButton) {
+        let eventRef = FIRDatabaseRequest.shared.db.collection("events").document(currEvent!.id!)
+        eventRef.delete() { err in
+            if let err = err {
+                print("Error removing document: \(err)")
+            } else {
+                print("Document successfully removed!")
+            }
+        }
+        dismiss(animated: true, completion: nil)
     }
     
 }
