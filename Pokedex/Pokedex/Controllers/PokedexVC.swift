@@ -100,11 +100,12 @@ class PokedexVC: UIViewController {
         let safeArea = view.safeAreaInsets
         //let searchBarSTF = searchBar.sizeThatFits(CGSize.init(width: view.bounds.width - 50, height: 30))
         searchBar.frame = CGRect.init(x: view.bounds.width/8, y: safeArea.top + 120, width: view.bounds.width / 4 * 3, height: 30)
-        //searchBar.tintColor = .blue
+        searchBar.tintColor = .blue
         searchBar.barTintColor = UIColor(red: 202/255, green: 233/255, blue: 255/255, alpha: 1)
         searchBar.placeholder = "Search for a pokemon..."
         searchBar.showsCancelButton = true
         searchBar.showsScopeBar = true
+        searchBar.isTranslucent = false
         currPokemons = pokemons
         copyCurrPokemons = currPokemons
         currTypes = types

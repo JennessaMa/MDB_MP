@@ -161,7 +161,6 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         //upload image to firestore
         let ref = FIRStorage.shared.storage.reference().child(UUID().uuidString + ".jpeg")
         _ = ref.putData(pickedImageData!, metadata: FIRStorage.shared.metadata) { (metadata, error) in
-            print("error in putData \(String(describing: error))")
           ref.downloadURL { (url, error) in
             guard let downloadURL = url else {
                 print("ERROR OCCURED WHILE DOWNLOADING URL - error: \(String(describing: error))")
@@ -188,7 +187,8 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         }))
 
         alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-        present(alert, animated: true, completion: nil)
+        alert.view.addSubview(UIView())
+        present(alert, animated: false, completion: nil)
     }
     
     private func openCamera() {
@@ -199,7 +199,8 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         } else {
             let alert  = UIAlertController(title: "Warning", message: "You don't have camera", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+            alert.view.addSubview(UIView())
+            present(alert, animated: false, completion: nil)
         }
     }
     
@@ -211,7 +212,7 @@ class CreateEventVC: UIViewController, UINavigationControllerDelegate {
         } else {
             let alert  = UIAlertController(title: "Warning", message: "You don't have permission to access gallery.", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+            present(alert, animated: false, completion: nil)
         }
     }
     

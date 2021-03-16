@@ -12,7 +12,6 @@ class FeedVC: UIViewController {
     var events: [Event]?
     
      func updateEvents(newEvents: [Event]) {
-        print("in updatingEvents")
         events = newEvents
         collectionView.reloadData()
     }
