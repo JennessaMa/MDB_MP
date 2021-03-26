@@ -6,8 +6,21 @@
 //
 
 import UIKit
+import GooglePlaces
 
 class WeatherPageVC: UIViewController {
+    
+    var loc: CLLocation? {
+        didSet {
+            
+        }
+    }
+    
+    var weather: Weather? {
+        didSet {
+            
+        }
+    }
 
     var testLabel: UILabel = {
         let lbl = UILabel()
