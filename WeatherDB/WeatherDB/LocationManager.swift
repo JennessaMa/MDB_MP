@@ -24,6 +24,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     override init() {
         super.init()
         manager.requestWhenInUseAuthorization()
+        
+        manager.requestAlwaysAuthorization()
+        
         manager.delegate = self
         manager.distanceFilter = 1000
         manager.requestLocation()
@@ -39,6 +42,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        
+        print("error while requesting location in LocationManager: \(error.localizedDescription)")
     }
 }

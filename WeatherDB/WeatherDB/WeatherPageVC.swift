@@ -12,13 +12,13 @@ class WeatherPageVC: UIViewController {
     
     var loc: CLLocation? {
         didSet {
-            
+            print("set location: \(loc!.description)")
         }
     }
     
     var weather: Weather? {
         didSet {
-            
+            print("set weather: \(weather!.condition)")
         }
     }
 
