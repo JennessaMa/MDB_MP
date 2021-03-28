@@ -48,8 +48,14 @@ class MainVC: UIViewController {
     
     var addLocation: UIButton = { //replace with + button
         let btn = UIButton()
-        btn.setTitle("Add Loc", for: .normal)
-        btn.backgroundColor = .white
+        btn.setImage(UIImage(systemName: "plus"), for: .normal)
+        let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular))
+        btn.setPreferredSymbolConfiguration(config, forImageIn: .normal)
+        btn.layer.cornerRadius = 41 / 2
+        btn.layer.borderWidth = 3
+        btn.layer.borderColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
+        btn.tintColor = .white
+        btn.contentEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
         btn.translatesAutoresizingMaskIntoConstraints = false
         return btn
     }()
@@ -59,6 +65,8 @@ class MainVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        //https://www.hackingwithswift.com/example-code/uikit/how-to-create-a-page-curl-effect-using-uipageviewcontroller
+        //https://www.linkedin.com/pulse/using-ios-pageviewcontroller-without-storyboards-paul-tangen/
         pageController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         
         addChild(pageController)
@@ -76,9 +84,8 @@ class MainVC: UIViewController {
 //            pageController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
 //            pageController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             addLocation.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
-            addLocation.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            addLocation.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
+            addLocation.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
