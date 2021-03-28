@@ -20,7 +20,7 @@ class GMSPlaces {
     
     var selectedPlace: GMSPlace?
         
-    func getCurrentLocation() -> CLLocation {
+    func getCurrentLocation() -> CLLocation { //not sure if needed
         var loc: CLLocation?
         let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue))
         GMSPlaces.client.findPlaceLikelihoodsFromCurrentLocation(withPlaceFields: fields, callback: {
@@ -65,7 +65,7 @@ class GMSPlaces {
         return CLLocation(latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
     }
     
-    func getLocationVCs(locIDs: [String], vc: MainVC) {
+    func getLocationVCs(locIDs: [String], vc: MainVC) { //fixed ..?
         for id in locIDs {
             
             GMSPlaces.client.lookUpPlaceID(id, callback: { (result: GMSPlace?, error: Error?) in
@@ -75,14 +75,11 @@ class GMSPlaces {
                 }
                 if let result = result {
                     let loc: CLLocation = CLLocation(latitude: result.coordinate.latitude, longitude: result.coordinate.longitude)
-                    WeatherRequest.shared.weather(at: loc) { result in
-                        switch result {
+                    WeatherRequest.shared.weather(at: loc) { weatherResult in
+                        switch weatherResult {
                         case .success(let weather):
-                            let weatherVC: WeatherPageVC = WeatherPageVC()
-                            weatherVC.weather = weather
-                            weatherVC.loc = loc
-                            print("appending to vc.controllers")
-                            vc.controllers!.append(weatherVC)
+                            vc.locations.append(loc)
+                            vc.weathers.append(weather)
                         case .failure:
                             print("Error with a weather request at location \(loc.description)")
                             return

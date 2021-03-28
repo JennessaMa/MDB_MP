@@ -11,15 +11,32 @@ import GooglePlaces
 class MainVC: UIViewController {
 
     var pageController: UIPageViewController!
-    var pageControl: UIPageControl!
+    var pageControl: UIPageControl = {
+        let pc = UIPageControl()
+        pc.translatesAutoresizingMaskIntoConstraints = false
+        pc.currentPageIndicatorTintColor = UIColor.black
+        pc.pageIndicatorTintColor = UIColor.lightGray
+        pc.currentPage = 0
+        return pc
+    }()
     
     var locationIDs = UserDefaults.standard.array(forKey: "locations") as? [String]
-    
-    var controllers : [WeatherPageVC]? {
+    var locations: [CLLocation] = []
+    var weathers: [Weather] = [] {
         didSet {
-            guard let controllers = controllers else { return }
-            print(controllers)
-            pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
+            if (weathers.count == locationIDs?.count) {
+                createVCs()
+            }
+        }
+    }
+    
+    var controllers : [WeatherPageVC] = [WeatherPageVC]() {
+        didSet {
+            if controllers.count == locationIDs!.count {
+                print("set viewcontrollers")
+                pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
+                pageController.reloadInputViews()
+            }
         }
     }
     
@@ -29,6 +46,13 @@ class MainVC: UIViewController {
         }
     }
     
+    var addLocation: UIButton = { //replace with + button
+        let btn = UIButton()
+        btn.setTitle("Add Loc", for: .normal)
+        btn.backgroundColor = .white
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        return btn
+    }()
     
     var currVCInd = 0
     
@@ -36,11 +60,29 @@ class MainVC: UIViewController {
         super.viewDidLoad()
 
         pageController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        pageControl = UIPageControl()
-
+        
         addChild(pageController)
         view.addSubview(pageController.view)
-        pageController = UIPageViewController(transitionStyle: .pageCurl, navigationOrientation: .horizontal, options: nil)
+        view.addSubview(pageControl)
+        
+        let views = ["pageController": pageController.view] as [String: AnyObject]
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|[pageController]|", options: [], metrics: nil, views: views))
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pageController]|", options: [], metrics: nil, views: views))
+        
+        view.addSubview(addLocation)
+        
+        NSLayoutConstraint.activate([
+//            pageController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+//            pageController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            pageController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            addLocation.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
+            addLocation.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            addLocation.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -5),
+            pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
+        ])
+        
         pageController.dataSource = self
         pageController.delegate = self
         
@@ -55,16 +97,33 @@ class MainVC: UIViewController {
         }
         guard let locationIDs = locationIDs else { return }
         print("locationIDs: \(locationIDs) ")
+        
+        pageControl.numberOfPages = locationIDs.count
+        
         GMSPlaces.shared.getLocationVCs(locIDs: locationIDs, vc: self)
     }
     
+    func createVCs() {
+        for i in 0..<weathers.count {
+            DispatchQueue.main.async {
+                print("adding to controllers list")
+                let vc = WeatherPageVC()
+                vc.loc = self.locations[i]
+                vc.weather = self.weathers[i]
+                self.controllers.append(vc)
+            }
+        }
+    }
+    
+    func addVC() {
+        
+    }
     
 }
 
 extension MainVC: UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        guard let controllers = controllers else { return nil }
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
             if index > 0 {
                 currVCInd = index - 1
@@ -77,7 +136,6 @@ extension MainVC: UIPageViewControllerDataSource {
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        guard let controllers = controllers else { return nil }
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
             if index < controllers.count - 1 {
                 currVCInd = index + 1
@@ -94,7 +152,6 @@ extension MainVC: UIPageViewControllerDataSource {
 extension MainVC: UIPageViewControllerDelegate {
 
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        guard let controllers = controllers else { return }
         if let viewControllers = pageViewController.viewControllers {
             if let viewControllerIndex = controllers.firstIndex(of: controllers[0]) {
                     self.pageControl.currentPage = viewControllerIndex

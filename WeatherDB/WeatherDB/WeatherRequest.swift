@@ -88,8 +88,6 @@ class WeatherRequest {
     
     private func sendRequest(url: URL, completion: ((Result<Weather, RequestError>)->Void)?) {
         let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
-            print("data: \(data?.debugDescription)")
-            print("response: \((response as? HTTPURLResponse)?.debugDescription)")
             guard let response = response as? HTTPURLResponse,
                   response.statusCode == 200, let data = data, error == nil else {
                 // TODO: Error Handling
