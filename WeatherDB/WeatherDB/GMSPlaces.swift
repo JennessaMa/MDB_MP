@@ -9,17 +9,13 @@ import Foundation
 import GooglePlaces
 
 class GMSPlaces {
-    
-    //static let shared = GooglePlaces.GMSPlacesClient()
-    
+        
     static let client = GMSPlacesClient.shared()
     
     static let shared = GMSPlaces()
     
     var currID: String?
-    
-    var selectedPlace: GMSPlace?
-        
+            
     func getCurrentLocation() -> CLLocation { //not sure if needed
         var loc: CLLocation?
         let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.coordinate.rawValue))
@@ -78,7 +74,7 @@ class GMSPlaces {
                     WeatherRequest.shared.weather(at: loc) { weatherResult in
                         switch weatherResult {
                         case .success(let weather):
-                            vc.locations.append(loc)
+                            vc.locations.append(loc) //unused
                             vc.weathers.append(weather)
                         case .failure:
                             print("Error with a weather request at location \(loc.description)")

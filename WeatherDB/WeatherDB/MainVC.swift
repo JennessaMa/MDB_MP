@@ -20,23 +20,14 @@ class MainVC: UIViewController {
         return pc
     }()
     
-    var locationIDs = UserDefaults.standard.array(forKey: "locations") as? [String]
-    var locations: [CLLocation] = []
-    var weathers: [Weather] = [] {
-        didSet {
-            if (weathers.count == locationIDs?.count) {
-                createVCs()
-            }
-        }
-    }
+    //locationIDs will start with previously saved locations or []
+    //current location added when app launches
+    var locationIDs = UserDefaults.standard.array(forKey: "locations") as? [String] ?? []
+    var locations: [CLLocation] = [] //unused
     
-    var controllers : [WeatherPageVC] = [WeatherPageVC]() {
+    var didChangeCurrLocation = 0 {
         didSet {
-            if controllers.count == locationIDs!.count {
-                print("set viewcontrollers")
-                pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
-                pageController.reloadInputViews()
-            }
+            
         }
     }
     
@@ -46,7 +37,25 @@ class MainVC: UIViewController {
         }
     }
     
-    var addLocation: UIButton = { //replace with + button
+    var weathers: [Weather] = [] {
+        didSet {
+            if (weathers.count == locationIDs.count) {
+                createVCs()
+            }
+        }
+    }
+    
+    var controllers : [WeatherPageVC] = [WeatherPageVC]() {
+        didSet {
+            if controllers.count == locationIDs.count {
+                print("set viewcontrollers")
+                pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
+                pageController.reloadInputViews()
+            }
+        }
+    }
+    
+    var addLocation: UIButton = {
         let btn = UIButton()
         btn.setImage(UIImage(systemName: "plus"), for: .normal)
         let config = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 25, weight: .regular))
@@ -78,14 +87,12 @@ class MainVC: UIViewController {
         view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|[pageController]|", options: [], metrics: nil, views: views))
         
         view.addSubview(addLocation)
+        addLocation.addTarget(self, action: #selector(didTapAddLoc(_:)), for: .touchUpInside)
         
         NSLayoutConstraint.activate([
-//            pageController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-//            pageController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            pageController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             addLocation.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
-            addLocation.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            addLocation.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -25),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -25),
             pageControl.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             pageControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
@@ -98,15 +105,11 @@ class MainVC: UIViewController {
     }
         
     func configureVCs() {
-        if (locationIDs == nil || locationIDs?.count == 0) {
-            locationIDs = []
-            locationIDs?.append(currPlaceID!)
-        }
-        guard let locationIDs = locationIDs else { return }
+        //add current location and place at front of pages
+        locationIDs.append(currPlaceID!)
+        locationIDs.swapAt(0, locationIDs.count - 1)
         print("locationIDs: \(locationIDs) ")
-        
         pageControl.numberOfPages = locationIDs.count
-        
         GMSPlaces.shared.getLocationVCs(locIDs: locationIDs, vc: self)
     }
     
@@ -122,7 +125,12 @@ class MainVC: UIViewController {
         }
     }
     
-    func addVC() {
+    @objc func didTapAddLoc(_ sender: UIButton) {
+        let vc = addLocationVC()
+        present(vc, animated: true, completion: nil)
+    }
+    
+    func addLocVC(location: CLLocation) {
         
     }
     

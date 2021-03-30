@@ -15,6 +15,7 @@ final class WeatherInfo: UIView {
         lbl.numberOfLines = 1
         lbl.textAlignment = .left
         lbl.font = .systemFont(ofSize: 13, weight: .medium)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
     
@@ -24,6 +25,7 @@ final class WeatherInfo: UIView {
         lbl.numberOfLines = 1
         lbl.textAlignment = .left
         lbl.font = .systemFont(ofSize: 30, weight: .semibold)
+        lbl.translatesAutoresizingMaskIntoConstraints = false
         return lbl
     }()
     
@@ -57,6 +59,10 @@ final class WeatherInfo: UIView {
             infoLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
             infoLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+    }
+    
+    func setInfo(info: String) {
+        infoLabel.text = info
     }
 
 }

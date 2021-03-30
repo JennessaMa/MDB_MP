@@ -31,6 +31,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         manager.distanceFilter = 1000
         manager.requestLocation()
         manager.startUpdatingLocation()
+        
+        if !CLLocationManager.significantLocationChangeMonitoringAvailable() {
+                // The device does not support this service.
+                return
+            }
+            manager.startMonitoringSignificantLocationChanges()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -42,6 +48,10 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("error while requesting location in LocationManager: \(error.localizedDescription)")
+        if let error = error as? CLError, error.code == .denied {
+              print("Location updates are not authorized: \(error.localizedDescription)")
+              manager.stopMonitoringSignificantLocationChanges()
+              return
+           }
     }
 }
