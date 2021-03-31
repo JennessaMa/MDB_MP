@@ -48,7 +48,7 @@ class GMSPlaces {
             if let placeLikelihoodList = placeLikelihoodList {
               for likelihood in placeLikelihoodList {
                 let place = likelihood.place
-                self.currID = place.placeID
+                self.currID = place.placeID //unused
                 vc.currPlaceID = place.placeID
                 break
               }
@@ -61,9 +61,22 @@ class GMSPlaces {
         return CLLocation(latitude: place.coordinate.latitude, longitude: place.coordinate.longitude)
     }
     
+    func setLocFromID(placeID: String, addLocVC: addLocationVC) {
+        GMSPlaces.client.lookUpPlaceID(placeID, callback: { (result: GMSPlace?, error: Error?) in
+            if let error = error {
+                print("An error occurred in setLocFromID: \(error.localizedDescription)")
+                return
+            }
+            if let result = result {
+                let loc: CLLocation = CLLocation(latitude: result.coordinate.latitude, longitude: result.coordinate.longitude)
+                print("setting selected loc: \(loc.description)")
+                addLocVC.selectedLoc = loc
+            }
+        })
+    }
+    
     func getLocationVCs(locIDs: [String], vc: MainVC) { //fixed ..?
         for id in locIDs {
-            
             GMSPlaces.client.lookUpPlaceID(id, callback: { (result: GMSPlace?, error: Error?) in
                 if let error = error {
                     print("An error occurred: \(error.localizedDescription)")

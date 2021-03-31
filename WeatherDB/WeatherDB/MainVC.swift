@@ -39,7 +39,7 @@ class MainVC: UIViewController {
     
     var weathers: [Weather] = [] {
         didSet {
-            if (weathers.count == locationIDs.count) {
+            if (weathers.count == locationIDs.count && starting == 0) {
                 createVCs()
             }
         }
@@ -47,10 +47,10 @@ class MainVC: UIViewController {
     
     var controllers : [WeatherPageVC] = [WeatherPageVC]() {
         didSet {
-            if controllers.count == locationIDs.count {
-                print("set viewcontrollers")
+            if controllers.count == locationIDs.count && starting == 0 {
                 pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
                 pageController.reloadInputViews()
+                starting = 1
             }
         }
     }
@@ -71,9 +71,15 @@ class MainVC: UIViewController {
     
     var currVCInd = 0
     
+    var starting = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        //TESTING PURPOSES
+//        locationIDs = []
+//        UserDefaults.standard.set([], forKey: "locations")
+        
         //https://www.hackingwithswift.com/example-code/uikit/how-to-create-a-page-curl-effect-using-uipageviewcontroller
         //https://www.linkedin.com/pulse/using-ios-pageviewcontroller-without-storyboards-paul-tangen/
         pageController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
@@ -107,16 +113,16 @@ class MainVC: UIViewController {
     func configureVCs() {
         //add current location and place at front of pages
         locationIDs.append(currPlaceID!)
+        print("index of current place: \(locationIDs.firstIndex(of: currPlaceID!)?.description ?? "")")
         locationIDs.swapAt(0, locationIDs.count - 1)
-        print("locationIDs: \(locationIDs) ")
         pageControl.numberOfPages = locationIDs.count
         GMSPlaces.shared.getLocationVCs(locIDs: locationIDs, vc: self)
     }
     
     func createVCs() {
         for i in 0..<weathers.count {
+            print("adding \(weathers[i].name)")
             DispatchQueue.main.async {
-                print("adding to controllers list")
                 let vc = WeatherPageVC()
                 vc.loc = self.locations[i]
                 vc.weather = self.weathers[i]
@@ -127,11 +133,41 @@ class MainVC: UIViewController {
     
     @objc func didTapAddLoc(_ sender: UIButton) {
         let vc = addLocationVC()
+        vc.mainVC = self
         present(vc, animated: true, completion: nil)
     }
     
-    func addLocVC(location: CLLocation) {
+    func addLocVC(location: CLLocation, placeID: String) {
+        let vc = WeatherPageVC()
+        vc.loc = location
+        WeatherRequest.shared.weather(at: location) { weatherResult in
+            switch weatherResult {
+            case .success(let weather):
+                DispatchQueue.main.async {
+                    vc.weather = weather
+                }
+                self.weathers.append(weather)
+            case .failure:
+                print("Error with a weather request at added location \(location.description)")
+                return
+            }
+        }
         
+        //DEBUGGING STUFF
+//        var cities: [String] = []
+//        for c in controllers {
+//            cities.append(c.cityName.text!)
+//        }
+//        print("controllers before: \(cities)")
+        
+        controllers.append(vc)
+        locationIDs.append(placeID)
+        var temp = locationIDs
+        temp.removeFirst() //don't save the current location
+        UserDefaults.standard.set(temp, forKey: "locations")
+        locations.append(location) //unused
+        pageControl.numberOfPages += 1
+        //pageController.reloadInputViews()
     }
     
 }
@@ -139,18 +175,45 @@ class MainVC: UIViewController {
 extension MainVC: UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+//        if let viewControllerIndex = self.controllers.firstIndex(of: viewController as! WeatherPageVC) {
+//                if viewControllerIndex == 0 {
+//                    // wrap to last page in array
+//                    print("showing last controller")
+//                    currVCInd = controllers.count - 1
+//                    return self.controllers.last
+//                } else {
+//                    // go to previous page in array
+//                    print("showing index \(viewControllerIndex - 1)")
+//                    currVCInd = viewControllerIndex - 1
+//                    return self.controllers[viewControllerIndex - 1]
+//                }
+//            }
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
-            if index > 0 {
-                currVCInd = index - 1
-                return controllers[index - 1]
-            } else {
-                return nil
-            }
-        }
-        return nil
+                    if index > 0 {
+                        currVCInd = index - 1
+                        return controllers[index - 1]
+                    } else {
+                        return nil
+                    }
+                }
+            return nil
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+//        if let viewControllerIndex = self.controllers.firstIndex(of: viewController as! WeatherPageVC) {
+//                if viewControllerIndex < self.controllers.count - 1 {
+//                    // go to next page in array
+//                    print("showing index \(viewControllerIndex + 1)")
+//                    currVCInd = viewControllerIndex + 1
+//                    return self.controllers[viewControllerIndex + 1]
+//                } else {
+//                    // wrap to first page in array
+//                    print("showing first controller")
+//                    currVCInd = 0
+//                    return self.controllers.first
+//                }
+//            }
+    
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
             if index < controllers.count - 1 {
                 currVCInd = index + 1
@@ -159,7 +222,7 @@ extension MainVC: UIPageViewControllerDataSource {
                 return nil
             }
         }
-        return nil
+            return nil
     }
 
 }
@@ -167,11 +230,13 @@ extension MainVC: UIPageViewControllerDataSource {
 extension MainVC: UIPageViewControllerDelegate {
 
     func pageViewController(_ pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [UIViewController], transitionCompleted completed: Bool) {
-        if let viewControllers = pageViewController.viewControllers {
-            if let viewControllerIndex = controllers.firstIndex(of: controllers[0]) {
+        if completed {
+            if let viewControllers = pageViewController.viewControllers {
+                if let viewControllerIndex = self.controllers.firstIndex(of: viewControllers[0] as! WeatherPageVC) {
                     self.pageControl.currentPage = viewControllerIndex
                 }
             }
+        }
     }
 
 }

@@ -11,6 +11,17 @@ import GooglePlaces
 class addLocationVC: UIViewController {
     
     var autocompleteController: GMSAutocompleteViewController = GMSAutocompleteViewController()
+    
+    var mainVC: MainVC!
+    
+    var selectedPlaceID: String!
+    
+    var selectedLoc: CLLocation? {
+        didSet {
+            mainVC.addLocVC(location: selectedLoc!, placeID: selectedPlaceID)
+            dismiss(animated: true, completion: nil)
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,8 +35,7 @@ class addLocationVC: UIViewController {
         filter.type = .city
         autocompleteController.autocompleteFilter = filter
         
-        present(autocompleteController, animated: true, completion: nil)
-        
+        view.addSubview(autocompleteController.view)
     }
 
 }
@@ -33,9 +43,8 @@ class addLocationVC: UIViewController {
 extension addLocationVC: GMSAutocompleteViewControllerDelegate {
     
     func viewController(_ viewController: GMSAutocompleteViewController, didAutocompleteWith place: GMSPlace) {
-        let selectedLoc: CLLocation =  GMSPlaces.shared.getLocation(place: place)
-        print("user selected this location: \(String(describing: place.name))")
-        dismiss(animated: true, completion: nil)
+        selectedPlaceID = place.placeID
+        GMSPlaces.shared.setLocFromID(placeID: place.placeID!, addLocVC: self)
     }
     
     func viewController(_ viewController: GMSAutocompleteViewController, didFailAutocompleteWithError error: Error) {
