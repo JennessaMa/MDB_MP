@@ -64,5 +64,10 @@ final class WeatherInfo: UIView {
     func setInfo(info: String) {
         infoLabel.text = info
     }
+    
+    func setTextColor(titleColor: UIColor = .darkGray, infoColor: UIColor = .white) {
+        titleLabel.textColor = titleColor
+        infoLabel.textColor = infoColor
+    }
 
 }

@@ -25,7 +25,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         super.init()
         manager.requestWhenInUseAuthorization()
         
-        manager.requestAlwaysAuthorization()
+        //manager.requestAlwaysAuthorization()
         
         manager.delegate = self
         manager.distanceFilter = 1000
@@ -54,6 +54,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        MainVC.currLocFailed = true
         if let error = error as? CLError, error.code == .denied {
               print("Location updates are not authorized: \(error.localizedDescription)")
               manager.stopMonitoringSignificantLocationChanges()

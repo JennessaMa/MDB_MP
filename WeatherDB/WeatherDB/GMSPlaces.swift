@@ -18,12 +18,14 @@ class GMSPlaces {
     
     var mainRef: MainVC?
     
-    func setCurrentLocationID(vc: MainVC) { //fixed
+    func setCurrentLocationID(vc: MainVC) {
+        print("setting the currPlaceID")
         let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.placeID.rawValue))
-
         GMSPlaces.client.findPlaceLikelihoodsFromCurrentLocation(withPlaceFields: fields, callback: {
             (placeLikelihoodList: Array<GMSPlaceLikelihood>?, error: Error?) in
             if let error = error {
+                MainVC.currLocFailed = true
+                vc.currLocFailed()
               print("An error occurred: \(error.localizedDescription)")
               return
             }
@@ -51,13 +53,12 @@ class GMSPlaces {
             }
             if let result = result {
                 let loc: CLLocation = CLLocation(latitude: result.coordinate.latitude, longitude: result.coordinate.longitude)
-                print("setting selected loc: \(loc.description)")
                 addLocVC.selectedLoc = loc
             }
         })
     }
     
-    func getLocationVCs(locIDs: [String], vc: MainVC) { //fixed ..?
+    func getLocationVCs(locIDs: [String], vc: MainVC) {
         mainRef = vc
         for id in locIDs {
             GMSPlaces.client.lookUpPlaceID(id, callback: { (result: GMSPlace?, error: Error?) in
@@ -83,11 +84,11 @@ class GMSPlaces {
     }
     
     func updateCurrLocation() { 
-        print("in UPDATE CURRENT LOCATION")
         let fields: GMSPlaceField = GMSPlaceField(rawValue: UInt(GMSPlaceField.placeID.rawValue))
         GMSPlaces.client.findPlaceLikelihoodsFromCurrentLocation(withPlaceFields: fields, callback: {
             (placeLikelihoodList: Array<GMSPlaceLikelihood>?, error: Error?) in
             if let error = error {
+                MainVC.currLocFailed = true
               print("An error occurred: \(error.localizedDescription)")
               return
             }
@@ -96,13 +97,24 @@ class GMSPlaces {
                 let place = likelihood.place
                 self.currID = place.placeID //unused
                 let loc: CLLocation = LocationManager.shared.location!
-                self.mainRef?.locations[0] = loc
+                //self.mainRef?.locations[0] = loc
                 WeatherRequest.shared.weather(at: loc) { weatherResult in
                     switch weatherResult {
                     case .success(let weather):
-                        self.mainRef!.currPlaceID = place.placeID
-                        self.mainRef?.locations[0] = loc
-                        self.mainRef?.weathers[0] = weather
+                        if (MainVC.currLocFailed) {
+                            //MainVC.currLocFailed = false //FIX: can't change settings to get curr location before app starts
+                            print("adding a new current location to locations and weathers list: \(weather.name)")
+                            self.mainRef?.locations.append(loc)
+                            self.mainRef?.weathers.append(weather)
+                            self.mainRef?.locations.swapAt(0, (self.mainRef?.locations.count)! - 1)
+                            self.mainRef?.weathers.swapAt(0, (self.mainRef?.weathers.count)! - 1)
+                            self.mainRef!.currPlaceID = place.placeID
+                        } else {
+                            print("modifying first item of locations and weathers list")
+                            self.mainRef?.locations[0] = loc
+                            self.mainRef?.weathers[0] = weather
+                            self.mainRef!.currPlaceID = place.placeID
+                        }
                     case .failure:
                         print("Error with a weather request at location \(loc.description)")
                         return

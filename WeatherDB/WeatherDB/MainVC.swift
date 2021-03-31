@@ -10,11 +10,9 @@ import GooglePlaces
 
 class MainVC: UIViewController {
     
-    static var initialCurrDone = 0 {
-        didSet { //set it to new currID?
-            
-        }
-    }
+    static var initialCurrDone = 0
+    
+    static var currLocFailed = false
 
     var pageController: UIPageViewController!
     var pageControl: UIPageControl = {
@@ -36,6 +34,7 @@ class MainVC: UIViewController {
             if (MainVC.initialCurrDone == 0) {
                 configureVCs()
             } else {
+                print("calling changeCurrLocVC from didSet of ucrrplace ID")
                 changeCurrLocVC()
             }
         }
@@ -116,15 +115,19 @@ class MainVC: UIViewController {
     }
         
     func configureVCs() {
-        //add current location and place at front of pages
-        locationIDs.append(currPlaceID!)
-        print("index of current place: \(locationIDs.firstIndex(of: currPlaceID!)?.description ?? "")")
-        locationIDs.swapAt(0, locationIDs.count - 1)
+        //add current location and place at front of pages if curr location is set
+        print("configuring the VCs")
+        print("curr loc failed: \(MainVC.currLocFailed)")
+        if (!MainVC.currLocFailed) {
+            locationIDs.append(currPlaceID!)
+            locationIDs.swapAt(0, locationIDs.count - 1)
+        }
         pageControl.numberOfPages = locationIDs.count
         GMSPlaces.shared.getLocationVCs(locIDs: locationIDs, vc: self)
     }
     
     func createVCs() {
+        print("creating the VCs")
         for i in 0..<weathers.count {
             print("adding \(weathers[i].name)")
             DispatchQueue.main.async {
@@ -132,6 +135,9 @@ class MainVC: UIViewController {
                 vc.loc = self.locations[i]
                 vc.weather = self.weathers[i]
                 self.controllers.append(vc)
+                if (i == 0 && !MainVC.currLocFailed) {
+                    vc.isCurrent = true
+                }
             }
         }
     }
@@ -168,21 +174,35 @@ class MainVC: UIViewController {
         controllers.append(vc)
         locationIDs.append(placeID)
         var temp = locationIDs
-        temp.removeFirst() //don't save the current location
-        UserDefaults.standard.set(temp, forKey: "locations")
+        temp.removeFirst()
+        if (!MainVC.currLocFailed) {
+            //don't save the current location if contains curr location
+            UserDefaults.standard.set(temp, forKey: "locations")
+        } else {
+            UserDefaults.standard.setValue(locationIDs, forKey: "locations")
+        }
+        
         locations.append(location) //unused
         pageControl.numberOfPages += 1
-        //pageController.reloadInputViews()
+        if (MainVC.currLocFailed) {
+            pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
+            pageControl.reloadInputViews()
+        }
     }
     
     func changeCurrLocVC() {
-        print("in changeCurrLocVC changing current vc")
         DispatchQueue.main.async { [weak self] in
             let newVC = WeatherPageVC()
             newVC.weather = self!.weathers[0]
             newVC.loc = self!.locations[0]
-            self!.controllers[0] = newVC
-            
+            if (MainVC.currLocFailed) {
+                self!.controllers.append(newVC)
+                self!.controllers.swapAt(0, self!.controllers.count - 1)
+                self!.pageControl.numberOfPages += 1
+            } else {
+                self!.controllers[0] = newVC
+            }
+            newVC.isCurrent = true
             //DEBUGGING STUFF
 //            var cities: [String] = []
 //            for c in self!.controllers {
@@ -195,24 +215,16 @@ class MainVC: UIViewController {
         }
     }
     
+    func currLocFailed() {
+        configureVCs()
+    }
+    
 }
 
 extension MainVC: UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-//        if let viewControllerIndex = self.controllers.firstIndex(of: viewController as! WeatherPageVC) {
-//                if viewControllerIndex == 0 {
-//                    // wrap to last page in array
-//                    print("showing last controller")
-//                    currVCInd = controllers.count - 1
-//                    return self.controllers.last
-//                } else {
-//                    // go to previous page in array
-//                    print("showing index \(viewControllerIndex - 1)")
-//                    currVCInd = viewControllerIndex - 1
-//                    return self.controllers[viewControllerIndex - 1]
-//                }
-//            }
+        
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
                     if index > 0 {
                         currVCInd = index - 1
@@ -225,19 +237,6 @@ extension MainVC: UIPageViewControllerDataSource {
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-//        if let viewControllerIndex = self.controllers.firstIndex(of: viewController as! WeatherPageVC) {
-//                if viewControllerIndex < self.controllers.count - 1 {
-//                    // go to next page in array
-//                    print("showing index \(viewControllerIndex + 1)")
-//                    currVCInd = viewControllerIndex + 1
-//                    return self.controllers[viewControllerIndex + 1]
-//                } else {
-//                    // wrap to first page in array
-//                    print("showing first controller")
-//                    currVCInd = 0
-//                    return self.controllers.first
-//                }
-//            }
     
         if let index = controllers.firstIndex(of: viewController as! WeatherPageVC) {
             if index < controllers.count - 1 {
