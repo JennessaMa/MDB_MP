@@ -33,13 +33,19 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         manager.startUpdatingLocation()
         
         if !CLLocationManager.significantLocationChangeMonitoringAvailable() {
-                // The device does not support this service.
-                return
-            }
-            manager.startMonitoringSignificantLocationChanges()
+            // The device does not support this service.
+            return
+        }
+        manager.startMonitoringSignificantLocationChanges()
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if (MainVC.initialCurrDone == 1 && location!.coordinate.latitude != locations.first!.coordinate.latitude) {
+            print(location!.coordinate.latitude)
+            print(locations.first!.coordinate.latitude)
+            print("calling updateCurrLocation")
+            GMSPlaces.shared.updateCurrLocation()
+        }
         location = locations.first
     }
     

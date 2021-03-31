@@ -9,6 +9,12 @@ import UIKit
 import GooglePlaces
 
 class MainVC: UIViewController {
+    
+    static var initialCurrDone = 0 {
+        didSet { //set it to new currID?
+            
+        }
+    }
 
     var pageController: UIPageViewController!
     var pageControl: UIPageControl = {
@@ -25,15 +31,13 @@ class MainVC: UIViewController {
     var locationIDs = UserDefaults.standard.array(forKey: "locations") as? [String] ?? []
     var locations: [CLLocation] = [] //unused
     
-    var didChangeCurrLocation = 0 {
-        didSet {
-            
-        }
-    }
-    
     var currPlaceID: String? {
         didSet {
-            configureVCs()
+            if (MainVC.initialCurrDone == 0) {
+                configureVCs()
+            } else {
+                changeCurrLocVC()
+            }
         }
     }
     
@@ -51,6 +55,7 @@ class MainVC: UIViewController {
                 pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
                 pageController.reloadInputViews()
                 starting = 1
+                MainVC.initialCurrDone = 1
             }
         }
     }
@@ -168,6 +173,26 @@ class MainVC: UIViewController {
         locations.append(location) //unused
         pageControl.numberOfPages += 1
         //pageController.reloadInputViews()
+    }
+    
+    func changeCurrLocVC() {
+        print("in changeCurrLocVC changing current vc")
+        DispatchQueue.main.async { [weak self] in
+            let newVC = WeatherPageVC()
+            newVC.weather = self!.weathers[0]
+            newVC.loc = self!.locations[0]
+            self!.controllers[0] = newVC
+            
+            //DEBUGGING STUFF
+//            var cities: [String] = []
+//            for c in self!.controllers {
+//                cities.append(c.cityName.text!)
+//            }
+//            print("controllers now: \(cities)")
+            
+            self!.pageController.setViewControllers([self!.controllers[0]], direction: .forward, animated: false)
+            self!.pageControl.reloadInputViews()
+        }
     }
     
 }
