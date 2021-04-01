@@ -71,7 +71,5 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>WeatherDB uses location service to provide weather infomation at the current location.</string>
 </dict>
 </plist>

@@ -10,11 +10,13 @@ import GooglePlaces
 
 class WeatherPageVC: UIViewController {
         
-    var loc: CLLocation? { //unused
+    var loc: CLLocation? {
         didSet {
             print("set location in weatherpagevc: \(loc!.description)")
         }
     }
+    
+    var mainVC: MainVC?
     
     var isCurrent = false
     
@@ -117,6 +119,7 @@ class WeatherPageVC: UIViewController {
             deleteLoc.isHidden = true
         }
         view.addSubview(deleteLoc)
+        deleteLoc.addTarget(self, action: #selector(didTapDeleteLoc(_:)), for: .touchUpInside)
         NSLayoutConstraint.activate([
             deleteLoc.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 15),
             deleteLoc.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 25),
@@ -194,6 +197,11 @@ class WeatherPageVC: UIViewController {
             view.backgroundColor = .black
         }
         
+    }
+    
+    @objc func didTapDeleteLoc(_ sender: UIButton) {
+        guard let mainVC = mainVC else { return }
+        mainVC.deleteLoc(location: loc!)
     }
 
 }

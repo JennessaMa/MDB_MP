@@ -79,6 +79,7 @@ class MainVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .lightGray
         
         //TESTING PURPOSES
 //        locationIDs = []
@@ -116,7 +117,6 @@ class MainVC: UIViewController {
         
     func configureVCs() {
         //add current location and place at front of pages if curr location is set
-        print("configuring the VCs")
         print("curr loc failed: \(MainVC.currLocFailed)")
         if (!MainVC.currLocFailed) {
             locationIDs.append(currPlaceID!)
@@ -132,6 +132,7 @@ class MainVC: UIViewController {
             print("adding \(weathers[i].name)")
             DispatchQueue.main.async {
                 let vc = WeatherPageVC()
+                vc.mainVC = self
                 vc.loc = self.locations[i]
                 vc.weather = self.weathers[i]
                 self.controllers.append(vc)
@@ -149,8 +150,10 @@ class MainVC: UIViewController {
     }
     
     func addLocVC(location: CLLocation, placeID: String) {
+        print("adding new location")
         let vc = WeatherPageVC()
         vc.loc = location
+        vc.mainVC = self
         WeatherRequest.shared.weather(at: location) { weatherResult in
             switch weatherResult {
             case .success(let weather):
@@ -195,7 +198,8 @@ class MainVC: UIViewController {
             let newVC = WeatherPageVC()
             newVC.weather = self!.weathers[0]
             newVC.loc = self!.locations[0]
-            if (MainVC.currLocFailed) {
+            newVC.mainVC = self!
+            if (MainVC.currLocFailed && self!.controllers[0].isCurrent == false) {
                 self!.controllers.append(newVC)
                 self!.controllers.swapAt(0, self!.controllers.count - 1)
                 self!.pageControl.numberOfPages += 1
@@ -217,6 +221,25 @@ class MainVC: UIViewController {
     
     func currLocFailed() {
         configureVCs()
+    }
+    
+    func deleteLoc(location: CLLocation) {
+        let i = locations.firstIndex(of: location)
+        //print("deleting location at index \(i)")
+        locations.remove(at: i!)
+        locationIDs.remove(at: i!)
+        weathers.remove(at: i!)
+        controllers.remove(at: i!)
+        UserDefaults.standard.setValue(locationIDs, forKey: "locations")
+        pageControl.numberOfPages -= 1
+        if (controllers.count == 0) {
+            addLocation.tintColor = .black
+        } else {
+            pageController.setViewControllers([controllers[0]], direction: .forward, animated: false)
+            pageControl.reloadInputViews()
+        }
+        pageControl.currentPage = 0
+        currVCInd = 0 //useless
     }
     
 }
