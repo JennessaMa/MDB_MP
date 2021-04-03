@@ -115,6 +115,8 @@ class WeatherPageVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let isDark = self.traitCollection.userInterfaceStyle == UIUserInterfaceStyle.dark
+        
         if (isCurrent) { //can't delete current controller
             deleteLoc.isHidden = true
         }
@@ -151,51 +153,88 @@ class WeatherPageVC: UIViewController {
         
         let orangeColor = UIColor(red: 255/255, green: 183/255, blue: 3/255, alpha: 1)
         let darkColor = UIColor(red: 52/255, green: 58/255, blue: 64/255, alpha: 1)
-        
         let cond = weather!.condition.first!.name
-        if (cond == "Thunderstorm") {
-            view.backgroundColor = UIColor(red: 25/255, green: 25/255, blue: 25/255, alpha: 1)
-        } else if (cond == "Drizzle") {
-            view.backgroundColor = UIColor(red: 119/255, green: 141/255, blue: 169/255, alpha: 1)
-        } else if (cond == "Rain") {
-            view.backgroundColor = UIColor(red: 65/255, green: 90/255, blue: 119/255, alpha: 1)
-            feelsLike.setTextColor(titleColor: darkColor)
-            pressure.setTextColor(titleColor: darkColor)
-            humidity.setTextColor(titleColor: darkColor)
-        } else if (cond == "Snow") {
-            view.backgroundColor = UIColor(red: 248/255, green: 249/255, blue: 250/255, alpha: 1)
-            let blueColor = UIColor(red: 193/255, green: 211/255, blue: 254/255, alpha: 1)
-            cityName.textColor = blueColor
-            currTemp.textColor = blueColor
-            currCondition.textColor = blueColor
-            feelsLike.setTextColor(infoColor: blueColor)
-            pressure.setTextColor(infoColor: blueColor)
-            humidity.setTextColor(infoColor: blueColor)
-        } else if (cond == "Atmosphere") {
-            view.backgroundColor = UIColor(red: 206/255, green: 212/255, blue: 218/255, alpha: 1)
-            cityName.textColor = darkColor
-            currTemp.textColor = darkColor
-            currCondition.textColor = darkColor
-            feelsLike.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-            pressure.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-            humidity.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-        } else if (cond == "Clear") {
-            view.backgroundColor = UIColor(red: 33/255, green: 158/255, blue: 188/255, alpha: 1)
-            currCondition.textColor = orangeColor
-            feelsLike.setTextColor(titleColor: darkColor, infoColor: orangeColor)
-            pressure.setTextColor(titleColor: darkColor, infoColor: orangeColor)
-            humidity.setTextColor(titleColor: darkColor, infoColor: orangeColor)
-        } else if (cond == "Clouds") {
-            view.backgroundColor = UIColor(red: 167/255, green: 194/255, blue: 211/255, alpha: 1)
-            cityName.textColor = darkColor
-            currTemp.textColor = darkColor
-            currCondition.textColor = darkColor
-            feelsLike.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-            pressure.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-            humidity.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
-        } else {
-            view.backgroundColor = .black
+        var iconID = weather!.condition.first!.icon
+        if (!isDark) { //light mode: day icon, bg color and text depend on condition
+            if (iconID.contains("n")) {
+                let i = iconID.firstIndex(of: "n")
+                iconID = iconID[..<i!] + "d"
+            }
+            let url: URL = URL(string: "http://openweathermap.org/img/wn/\(iconID)@2x.png")!
+            if let data = try? Data(contentsOf: url) {
+                if let image = UIImage(data: data) {
+                    self.icon.image = image
+                }
+            }
+            if (cond == "Thunderstorm") {
+                view.backgroundColor = UIColor(red: 25/255, green: 25/255, blue: 25/255, alpha: 1)
+            } else if (cond == "Drizzle") {
+                view.backgroundColor = UIColor(red: 119/255, green: 141/255, blue: 169/255, alpha: 1)
+            } else if (cond == "Rain") {
+                view.backgroundColor = UIColor(red: 65/255, green: 90/255, blue: 119/255, alpha: 1)
+                feelsLike.setTextColor(titleColor: darkColor)
+                pressure.setTextColor(titleColor: darkColor)
+                humidity.setTextColor(titleColor: darkColor)
+            } else if (cond == "Snow") {
+                view.backgroundColor = UIColor(red: 248/255, green: 249/255, blue: 250/255, alpha: 1)
+                let blueColor = UIColor(red: 193/255, green: 211/255, blue: 254/255, alpha: 1)
+                cityName.textColor = blueColor
+                currTemp.textColor = blueColor
+                currCondition.textColor = blueColor
+                feelsLike.setTextColor(infoColor: blueColor)
+                pressure.setTextColor(infoColor: blueColor)
+                humidity.setTextColor(infoColor: blueColor)
+            } else if (cond == "Atmosphere") {
+                view.backgroundColor = UIColor(red: 206/255, green: 212/255, blue: 218/255, alpha: 1)
+                cityName.textColor = darkColor
+                currTemp.textColor = darkColor
+                currCondition.textColor = darkColor
+                feelsLike.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+                pressure.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+                humidity.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+            } else if (cond == "Clear") {
+                view.backgroundColor = UIColor(red: 33/255, green: 158/255, blue: 188/255, alpha: 1)
+                currCondition.textColor = orangeColor
+                feelsLike.setTextColor(titleColor: darkColor, infoColor: orangeColor)
+                pressure.setTextColor(titleColor: darkColor, infoColor: orangeColor)
+                humidity.setTextColor(titleColor: darkColor, infoColor: orangeColor)
+            } else if (cond == "Clouds") {
+                view.backgroundColor = UIColor(red: 167/255, green: 194/255, blue: 211/255, alpha: 1)
+                cityName.textColor = darkColor
+                currTemp.textColor = darkColor
+                currCondition.textColor = darkColor
+                feelsLike.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+                pressure.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+                humidity.setTextColor(titleColor: UIColor(red: 33/255, green: 37/255, blue: 41/255, alpha: 1), infoColor: darkColor)
+            } else {
+                view.backgroundColor = .black
+            }
+        } else { //dark mode: icon to night version, bg color + text, and pc tint colors
+            
+            if (iconID.contains("d")) {
+                let i = iconID.firstIndex(of: "d")
+                iconID = iconID[..<i!] + "n"
+            }
+            let url: URL = URL(string: "http://openweathermap.org/img/wn/\(iconID)@2x.png")!
+            if let data = try? Data(contentsOf: url) {
+                if let image = UIImage(data: data) {
+                    self.icon.image = image
+                }
+            }
+            
+            let text = UIColor(red: 224/255, green: 225/255, blue: 221/255, alpha: 1)
+            view.backgroundColor = UIColor(red: 13/255, green: 27/255, blue: 42/255, alpha: 1)
+            cityName.textColor = text
+            currTemp.textColor = text
+            currCondition.textColor = text
+            feelsLike.setTextColor(infoColor: text)
+            pressure.setTextColor(infoColor: text)
+            humidity.setTextColor(infoColor: text)
+            
+            mainVC?.pageControl.currentPageIndicatorTintColor = .white
+            mainVC?.pageControl.pageIndicatorTintColor = .darkGray
         }
+        
         
     }
     
